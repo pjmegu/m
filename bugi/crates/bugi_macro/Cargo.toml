@@ -1,0 +1,10 @@
+[package]
+name = "bugi_macro"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+proc-macro2.workspace = true
+syn.workspace = true
+quote.workspace = true
+nom = { version = "7.1.3" }

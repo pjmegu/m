@@ -1,0 +1,12 @@
+[package]
+name = "bugi_pdk"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Seliarize
+rmpv.workspace = true
+rmp-serde.workspace = true
+serde.workspace = true
+
+bugi_pdk_derive = { path = "../bugi_pdk_derive" }

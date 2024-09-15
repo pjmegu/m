@@ -1,0 +1,28 @@
+{
+    "name": "project-megu",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "mounts": [
+        {
+            "source": "${localWorkspaceFolderBasename}-target",
+            "target": "${containerWorkspaceFolder}/target",
+            "type": "volume"
+        }
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer",
+                "vadimcn.vscode-lldb",
+                "tamasfe.even-better-toml",
+                "fill-labs.dependi",
+                "BytecodeAlliance.wit-idl",
+                "dtsvet.vscode-wasm"
+            ],
+            "settings": {
+                "rust-analyzer.check.command": "clippy"
+            }
+        }
+    }
+}

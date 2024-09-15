@@ -1,0 +1,15 @@
+[package]
+name = "bugi_pdk_derive"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# macro
+proc-macro2.workspace = true
+syn.workspace = true
+quote.workspace = true
+
+bugi_macro = { path = "../bugi_macro" }
+
+[lib]
+proc-macro = true

@@ -1,0 +1,13 @@
+[package]
+name = "simple_pdk"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Seliarize
+serde.workspace = true
+
+bugi_pdk = { path = "../../crates/bugi_pdk" }
+
+[lib]
+crate-type = ["cdylib"]
