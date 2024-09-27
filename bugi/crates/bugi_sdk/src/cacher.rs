@@ -1,36 +1,28 @@
 use std::{
-    cell::OnceCell,
     collections::HashMap,
-    sync::{Arc, RwLock},
+    sync::{Arc, OnceLock, RwLock},
 };
 
 use wasmtime::Store;
 
 use crate::{
     module::{PluginID, PluginInstance},
-    spec_type::FuncDesc,
     universe::PluginUniverse,
 };
 
 pub struct PluginCacher(Arc<RwLock<PluginCacherInner>>);
 
 pub(crate) struct PluginCacherInner {
-    symbol_desc: HashMap<(PluginID, String), FuncDesc>,
-    store: Arc<RwLock<Store<OnceCell<PluginCacher>>>>,
+    store: Arc<RwLock<Store<OnceLock<PluginCacher>>>>,
     ins: HashMap<PluginID, Arc<PluginInstance>>,
-    max_drop_time: Option<u32>,
-    now_drop_time: u32,
     univ: PluginUniverse,
 }
 
 impl PluginCacher {
-    pub(crate) fn new(univ: &PluginUniverse, max_drop_time: Option<u32>) -> Self {
+    pub(crate) fn new(univ: &PluginUniverse) -> Self {
         let cacher = Arc::new(RwLock::new(PluginCacherInner {
-            symbol_desc: HashMap::new(),
-            store: Arc::new(RwLock::new(Store::new(&univ.get_engine(), OnceCell::new()))),
+            store: Arc::new(RwLock::new(Store::new(&univ.get_engine(), OnceLock::new()))),
             ins: HashMap::new(),
-            max_drop_time,
-            now_drop_time: 0,
             univ: PluginUniverse::clone(univ),
         }));
         let c_cacher = Arc::clone(&cacher);
@@ -67,22 +59,8 @@ impl PluginCacher {
         }
     }
 
-    pub(crate) fn get_store(&self) -> Arc<RwLock<Store<OnceCell<PluginCacher>>>> {
+    pub(crate) fn get_store(&self) -> Arc<RwLock<Store<OnceLock<PluginCacher>>>> {
         Arc::clone(&self.0.read().unwrap().store)
-    }
-
-    pub(crate) fn inc_drop_time(&self) {
-        let mut data = self.0.write().unwrap();
-        data.now_drop_time += 1;
-    }
-
-    pub(crate) fn check_drop_time(&self) -> bool {
-        let data = self.0.read().unwrap();
-        if let Some(max) = data.max_drop_time {
-            data.now_drop_time >= max
-        } else {
-            false
-        }
     }
 
     pub(crate) fn get_univ(&self) -> PluginUniverse {

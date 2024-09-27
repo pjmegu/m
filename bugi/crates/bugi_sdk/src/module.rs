@@ -1,8 +1,6 @@
 use std::{
     borrow::BorrowMut,
-    cell::OnceCell,
-    marker::PhantomData,
-    sync::{Arc, RwLock, RwLockWriteGuard, Weak},
+    sync::{RwLock, Weak},
 };
 
 use anyhow::{Context, Result};
@@ -12,7 +10,7 @@ use crate::{
     cacher::PluginCacher,
     hostfunc::set_hostfunc,
     param::{PluginInput, PluginResult},
-    spec_type::{FuncDesc, PluginDesc},
+    spec_type::PluginDesc,
     universe::PluginUniverseWeak,
 };
 
@@ -20,9 +18,9 @@ pub(crate) type PluginID = u32;
 
 pub struct PluginModule {
     pub(crate) id: PluginID,
-    pub(crate) str_id: String,
+    // pub(crate) str_id: String,
     pub(crate) module: Module,
-    pub(crate) univ: PluginUniverseWeak,
+    // pub(crate) univ: PluginUniverseWeak,
 }
 
 pub struct PluginRef {
@@ -90,7 +88,6 @@ impl PluginRef {
                 let store = cacher.get_store();
                 let mut store = store.write().unwrap();
                 let result = ins.call::<A, R>((*store).borrow_mut(), &name, args)?;
-                cacher.inc_drop_time();
                 Ok(result)
             } else {
                 let mut linker = Linker::new(&engine);
@@ -101,60 +98,13 @@ impl PluginRef {
                 self.call(Some(cacher), name, args)
             }
         } else {
-            let cacher = PluginCacher::new(&self.univ.upgrade().unwrap(), None);
+            let cacher = PluginCacher::new(&self.univ.upgrade().unwrap());
             self.call(Some(cacher), name, args)
         }
     }
 }
 
 impl PluginInstance {
-    pub(crate) fn call_provide_desc(&self, store: &mut impl AsContextMut) -> Result<PluginDesc> {
-        let data_p = self
-            .ins
-            .get_typed_func::<(), (u32, u32)>(&mut *store, "__bugi_v0_provide_desc")?
-            .call(&mut *store, ())?;
-
-        let mem = self
-            .ins
-            .get_memory(&mut *store, "memory")
-            .context("memery get error")?;
-
-        let mut buffer = vec![0; data_p.1 as usize];
-        mem.read(&mut *store, data_p.0 as usize, &mut buffer)?;
-        let data = rmp_serde::from_slice::<PluginDesc>(&buffer)?;
-
-        self.call_low_mem_free(&mut *store, data_p.0, data_p.1)?;
-
-        Ok(data)
-    }
-
-    pub(crate) fn call_func_desc(
-        &self,
-        store: &mut impl AsContextMut,
-        name: String,
-    ) -> Result<FuncDesc> {
-        let data_p = self
-            .ins
-            .get_typed_func::<(), (u32, u32)>(
-                &mut *store,
-                format!("__bugi_v0_func_desc_{}", name).as_str(),
-            )?
-            .call(&mut *store, ())?;
-
-        let mem = self
-            .ins
-            .get_memory(&mut *store, "memory")
-            .context("memery get error")?;
-
-        let mut buffer = vec![0; data_p.1 as usize];
-        mem.read(&mut *store, data_p.0 as usize, &mut buffer)?;
-        let data = rmp_serde::from_slice::<FuncDesc>(&buffer)?;
-
-        self.call_low_mem_free(&mut *store, data_p.0, data_p.1)?;
-
-        Ok(data)
-    }
-
     pub(crate) fn call_low_mem_malloc(
         &self,
         store: &mut impl AsContextMut,

@@ -43,8 +43,8 @@ impl PluginUniverse {
         let module = Arc::new(RwLock::new(PluginModule {
             id,
             module,
-            str_id: desc.string_id.clone(),
-            univ: self.get_weak(),
+            // str_id: desc.string_id.clone(),
+            // univ: self.get_weak(),
         }));
 
         data.module.insert(id, Arc::clone(&module));
@@ -67,8 +67,8 @@ impl PluginUniverse {
         let module = Arc::new(RwLock::new(PluginModule {
             id,
             module,
-            str_id: desc.string_id.clone(),
-            univ: self.get_weak(),
+            // str_id: desc.string_id.clone(),
+            // univ: self.get_weak(),
         }));
 
         data.module.insert(id, Arc::clone(&module));
@@ -92,7 +92,7 @@ impl PluginUniverse {
             .unwrap()
             .module
             .get(&id)
-            .map(|x| Arc::clone(x))
+            .map(Arc::clone)
     }
 
     pub(crate) fn get_str_id(&self, id: &str) -> Option<PluginID> {
@@ -112,9 +112,7 @@ impl Default for PluginUniverse {
 
 impl Clone for PluginUniverse {
     fn clone(&self) -> Self {
-        PluginUniverse {
-            0: Arc::clone(&self.0),
-        }
+        PluginUniverse(Arc::clone(&self.0))
     }
 }
 

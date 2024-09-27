@@ -1,15 +1,15 @@
-use std::cell::OnceCell;
+use std::sync::OnceLock;
 
 use wasmtime::{Caller, Linker, Val};
 
 use crate::cacher::PluginCacher;
 
-pub(crate) fn set_hostfunc(linker: &mut Linker<OnceCell<PluginCacher>>) {
+pub(crate) fn set_hostfunc(linker: &mut Linker<OnceLock<PluginCacher>>) {
     linker
         .func_wrap(
             "bugi@v0",
             "call_univ_func",
-            |mut caller: Caller<'_, OnceCell<PluginCacher>>, arg_ptr: u32, arg_len: u32| {
+            |mut caller: Caller<'_, OnceLock<PluginCacher>>, arg_ptr: u32, arg_len: u32| {
                 let memory = caller.get_export("memory").unwrap().into_memory().unwrap();
                 let mut args = vec![0; arg_len as usize];
                 memory.read(&caller, arg_ptr as usize, &mut args).unwrap();

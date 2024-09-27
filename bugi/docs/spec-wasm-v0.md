@@ -52,7 +52,6 @@ Example:
 
 #### Functions(Use ABI)
 * `fn __bugi_v0_provide_desc(): Desc`: provide description (e.g. stringID)
-* `fn __bugi_v0_provide_func_desc_<func_name>(): FuncDesc`: provide func description
 * `fn __bugi_v0_called_func_<func_name>(args: AnyArray): Any`: call function in plugin
 
 ### Importable Function
