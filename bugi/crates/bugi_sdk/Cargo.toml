@@ -9,5 +9,6 @@ rand.workspace = true
 
 serde.workspace = true
 rmp-serde.workspace = true
+rmpv.workspace = true
 
-wasmtime = { version = "24.0.0" }
+wasmtime = { version = "25.0.0" }

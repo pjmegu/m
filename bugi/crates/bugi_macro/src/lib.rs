@@ -78,7 +78,7 @@ pub fn macro_export_attr(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         #[export_name = #name_desc]
         #[allow(improper_ctypes_definitions)]
-        extern "C" fn #name_desc_ident() -> (i32,i32) {
+        extern "C" fn #name_desc_ident() -> (u32,u32) {
             use ::bugi_pdk::macro_prelude::*;
 
             let mut bytes = Vec::new();
@@ -87,14 +87,12 @@ pub fn macro_export_attr(attr: TokenStream, item: TokenStream) -> TokenStream {
                 &Map(vec![(String(Utf8String::from("cacheable")), Boolean(#cache))]),
             )
             .expect("message pack encode error");
-            let res = (bytes.as_ptr() as i32, bytes.len() as i32);
-            forget(bytes);
-            res
+            copy_ptr(&bytes)
         }
 
         #[export_name = #name_call]
         #[allow(improper_ctypes_definitions)]
-        extern "C" fn #name_call_ident(args_ptr: i32, args_len: i32) -> (i32, i32) {
+        extern "C" fn #name_call_ident(args_ptr: u32, args_len: u32) -> (u32, u32) {
             use ::bugi_pdk::macro_prelude::*;
 
             let mut args = slice_from_ptr_len(args_ptr, args_len);
@@ -108,11 +106,9 @@ pub fn macro_export_attr(attr: TokenStream, item: TokenStream) -> TokenStream {
                 let res = #func_name(#(#arg_idents),*);
 
                 let res = to_vec_named(&res).unwrap();
-                let ret = (res.as_ptr() as i32, res.len() as i32);
-                forget(res);
-                ret
+                copy_ptr(&res)
             } else {
-                panic!("internal error: `__bugi_v0_called_func_f` args is not array")
+                panic!("internal error: `__bugi_v0_called_func_{}` args is not array", #name_call)
             }
         }
     };
