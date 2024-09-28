@@ -1,4 +1,4 @@
-# Bigi Wasm Plugin Spec V0
+# Bugi Wasm Plugin Spec V0
 
 ## ABIs
 ### Function Args
