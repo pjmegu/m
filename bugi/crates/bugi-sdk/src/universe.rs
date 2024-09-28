@@ -9,11 +9,14 @@ use wasmtime::{Engine, Module};
 
 use anyhow::Result;
 
-use crate::module::{get_desc, PluginID, PluginModule, PluginRef};
+use crate::{module::{get_desc, PluginID, PluginModule, PluginRef}, PluginCacher};
 
 const RAND_SEED: u64 = 20240911;
 
+/// A management system for the entire plugin.
+/// This is where plug-ins are loaded.
 pub struct PluginUniverse(Arc<RwLock<PluginUniverseInner>>);
+
 pub(crate) struct PluginUniverseWeak(Weak<RwLock<PluginUniverseInner>>);
 
 struct PluginUniverseInner {
@@ -24,6 +27,7 @@ struct PluginUniverseInner {
 }
 
 impl PluginUniverse {
+    /// Create New PluginUniverse.
     pub fn new() -> Self {
         PluginUniverse(Arc::new(RwLock::new(PluginUniverseInner {
             rng: SmallRng::seed_from_u64(RAND_SEED),
@@ -33,6 +37,8 @@ impl PluginUniverse {
         })))
     }
 
+    /// Load Plugin from file.  
+    /// `path` is a path to the wasm file.  
     pub fn add_module_from_file(&mut self, path: impl AsRef<Path>) -> Result<PluginRef> {
         let mut data = self.0.write().unwrap();
         let id = data.rng.next_u32();
@@ -58,6 +64,8 @@ impl PluginUniverse {
         })
     }
 
+    /// Load plugin from binary.  
+    /// `bin` is a binary of wasm.
     pub fn add_module_from_binary(&mut self, bin: &[u8]) -> Result<PluginRef> {
         let mut data = self.0.write().unwrap();
         let id = data.rng.next_u32();
@@ -80,6 +88,11 @@ impl PluginUniverse {
             univ: self.get_weak(),
             module: Arc::downgrade(&module),
         })
+    }
+
+    /// Create [PluginCacher].
+    pub fn make_cacher(&self) -> PluginCacher {
+        PluginCacher::new(self)
     }
 
     pub(crate) fn get_engine(&self) -> Engine {

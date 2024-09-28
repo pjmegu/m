@@ -10,6 +10,7 @@
             "type": "volume"
         }
     ],
+    "postCreateCommand": "bash ./.devcontainer/install_devtools.sh",
     "customizations": {
         "vscode": {
             "extensions": [

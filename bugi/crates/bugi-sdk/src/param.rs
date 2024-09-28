@@ -21,6 +21,10 @@ macro_rules! foreach_func_sig {
     };
 }
 
+/// Type trait that can be set as a plugin argument.
+/// The implemented tuple types of [serde::Serialize] can be used.
+/// When implementing this, the type must be one that can be serialized into 
+/// an array at [rmp_serde::to_vec_named] when serializing.
 pub trait PluginInput: Serialize {}
 
 macro_rules! gen_plugin_input {
@@ -31,6 +35,7 @@ macro_rules! gen_plugin_input {
 
 foreach_func_sig!(gen_plugin_input);
 
+/// A trait of the type that will be the return value of the plugin's function.
 pub trait PluginResult: DeserializeOwned {}
 
 impl<P: DeserializeOwned> PluginResult for P {}

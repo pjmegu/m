@@ -16,13 +16,15 @@ use crate::{
 
 pub(crate) type PluginID = u32;
 
-pub struct PluginModule {
+pub(crate) struct PluginModule {
     pub(crate) id: PluginID,
     // pub(crate) str_id: String,
     pub(crate) module: Module,
     // pub(crate) univ: PluginUniverseWeak,
 }
 
+/// Plug-in reference.
+/// From here you can call the referenced plugin's function.
 pub struct PluginRef {
     pub(crate) id: PluginID,
     pub(crate) univ: PluginUniverseWeak,

@@ -1052,6 +1052,10 @@ dependencies = [
 [[package]]
 name = "simple-sdk"
 version = "0.1.0"
+dependencies = [
+ "bugi-sdk",
+ "serde",
+]
 
 [[package]]
 name = "slice-group-by"
