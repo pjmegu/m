@@ -1,0 +1,39 @@
+# build contributor document and deploy to GitHub Pages
+
+name: Deploy Document to GitHub Pages
+
+on:
+    push: 
+        branches: 
+            - main
+
+jobs:
+    main:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Pages Dir
+              run: |
+                mkdir pages
+            - name: Build Rust Documents
+              run: |
+                cargo doc --no-deps --document-private-items --workspace
+                mv target/doc pages/rust
+            - name: Deploy to GitHub Pages
+              uses: actions/upload-pages-artifact@v3
+              with:
+                path: pages
+    deploy:
+        needs: main
+        runs-on: ubuntu-latest
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - uses: actions/deploy-pages@v4
+              id: deployment
+
+
