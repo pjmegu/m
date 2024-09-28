@@ -8,7 +8,7 @@ struct Test {
     s: String,
 }
 
-#[export(cacheable = true, export_name = "ttttt")]
+#[export(export_name = "ttttt")]
 fn test(t: Test) -> (Test, Test) {
     (t.clone(), t)
 }

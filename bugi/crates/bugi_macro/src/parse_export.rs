@@ -18,16 +18,10 @@ fn parse_sd(i: &str) -> IResult<&str, DataType> {
     Ok((i, DataType::String(data)))
 }
 
-fn parse_bool(i: &str) -> IResult<&str, DataType> {
-    let bool_p = ws(alt((tag("true"), tag("false"))));
-    let (i, data) = map_res(bool_p, |a: &str| a.parse::<bool>())(i)?;
-    Ok((i, DataType::Bool(data)))
-}
-
 fn parse_export_attr(i: &str) -> IResult<&str, (String, DataType)> {
     let (i, name) = ws(identifier)(i)?;
     let (i, _) = ws(char('='))(i)?;
-    let (i, data) = ws(alt((parse_bool, parse_sd)))(i)?;
+    let (i, data) = ws(alt((parse_sd,)))(i)?;
     Ok((i, (name.to_string(), data)))
 }
 
