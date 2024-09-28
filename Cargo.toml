@@ -4,7 +4,7 @@ members = [
     "bugi/crates/*",
 
     # examples
-    "bugi/example/*"
+    "bugi/example/*",
 ]
 resolver = "1"
 
@@ -20,5 +20,18 @@ serde = { version = "1.0.210", features = ["derive"] }
 
 # macro
 proc-macro2 = { version = "1.0.86" }
-syn = { version = "2.0.77", features = ["full"] }
+syn = { version = "2.0.79", features = ["full"] }
 quote = { version = "1.0.37" }
+
+# Workspace Crates
+
+# bugi
+
+bugi-cli = { path = "bugi/crates/bugi-cli" } # cli for check plugin
+
+bugi-pdk = { path = "bugi/crates/bugi-pdk" } # pdk
+bugi-pdk-derive = { path = "bugi/crates/bugi-pdk-derive" } # macro def for pdk
+
+bugi-sdk = { path = "bugi/crates/bugi-sdk" } # sdk
+
+bugi-macro = { path = "bugi/crates/bugi-macro" } # macro for pdk

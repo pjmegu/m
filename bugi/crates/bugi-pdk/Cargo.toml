@@ -1,5 +1,5 @@
 [package]
-name = "bugi_pdk"
+name = "bugi-pdk"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,4 +9,4 @@ rmpv.workspace = true
 rmp-serde.workspace = true
 serde.workspace = true
 
-bugi_pdk_derive = { path = "../bugi_pdk_derive" }
+bugi-pdk-derive.workspace = true

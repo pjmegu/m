@@ -1,5 +1,5 @@
 [package]
-name = "bugi_pdk_derive"
+name = "bugi-pdk-derive"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,7 +9,7 @@ proc-macro2.workspace = true
 syn.workspace = true
 quote.workspace = true
 
-bugi_macro = { path = "../bugi_macro" }
+bugi-macro.workspace = true
 
 [lib]
 proc-macro = true

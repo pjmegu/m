@@ -1,5 +1,5 @@
 [package]
-name = "simple_pdk"
+name = "simple-pdk"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,7 +7,7 @@ edition = "2021"
 # Seliarize
 serde.workspace = true
 
-bugi_pdk = { path = "../../crates/bugi_pdk" }
+bugi-pdk.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
