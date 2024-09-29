@@ -1,7 +1,8 @@
 {
     "name": "project-megu",
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "target": "dev"
     },
     "mounts": [
         {
@@ -10,7 +11,6 @@
             "type": "volume"
         }
     ],
-    "postCreateCommand": "bash ./.devcontainer/install_devtools.sh",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -19,7 +19,8 @@
                 "tamasfe.even-better-toml",
                 "fill-labs.dependi",
                 "BytecodeAlliance.wit-idl",
-                "dtsvet.vscode-wasm"
+                "dtsvet.vscode-wasm",
+                "denoland.vscode-deno"
             ],
             "settings": {
                 "rust-analyzer.check.command": "clippy"

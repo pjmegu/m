@@ -5,6 +5,9 @@ members = [
 
     # examples
     "bugi/example/*",
+
+    # tests
+    "bugi/tests/*",
 ]
 resolver = "1"
 

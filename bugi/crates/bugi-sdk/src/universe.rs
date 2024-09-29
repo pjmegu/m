@@ -15,6 +15,13 @@ const RAND_SEED: u64 = 20240911;
 
 /// A management system for the entire plugin.
 /// This is where plug-ins are loaded.
+/// 
+/// # Example
+/// ```rust,ignore
+/// 
+/// let univ = PluginUniverse::new();
+/// 
+/// ```
 pub struct PluginUniverse(Arc<RwLock<PluginUniverseInner>>);
 
 pub(crate) struct PluginUniverseWeak(Weak<RwLock<PluginUniverseInner>>);
@@ -39,7 +46,7 @@ impl PluginUniverse {
 
     /// Load Plugin from file.  
     /// `path` is a path to the wasm file.  
-    pub fn add_module_from_file(&mut self, path: impl AsRef<Path>) -> Result<PluginRef> {
+    pub fn load_plugin_from_file(&self, path: impl AsRef<Path>) -> Result<PluginRef> {
         let mut data = self.0.write().unwrap();
         let id = data.rng.next_u32();
         let module = Module::from_file(&data.engine, path)?;
@@ -66,7 +73,7 @@ impl PluginUniverse {
 
     /// Load plugin from binary.  
     /// `bin` is a binary of wasm.
-    pub fn add_module_from_binary(&mut self, bin: &[u8]) -> Result<PluginRef> {
+    pub fn load_plugin_from_binary(&self, bin: &[u8]) -> Result<PluginRef> {
         let mut data = self.0.write().unwrap();
         let id = data.rng.next_u32();
         let module = Module::from_binary(&data.engine, bin)?;

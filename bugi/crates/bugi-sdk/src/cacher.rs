@@ -14,6 +14,7 @@ use crate::{
 /// It is recommended that this structure exist per thread, but it can be shared among threads.  
 /// When calling a plugin, it may or may not be included in the arguments, 
 /// but the cacher is created inside the function and discarded at the end of the function call.
+#[derive(Clone)]
 pub struct PluginCacher(Arc<RwLock<PluginCacherInner>>);
 
 pub(crate) struct PluginCacherInner {
@@ -71,3 +72,4 @@ impl PluginCacher {
         self.0.read().unwrap().univ.clone()
     }
 }
+

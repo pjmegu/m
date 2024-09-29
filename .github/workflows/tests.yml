@@ -1,0 +1,30 @@
+name: Run Tests
+
+on: 
+    push: 
+        branches: [main]
+    pull_request:
+
+jobs:
+    rust:
+        runs-on: ubuntu-latest
+        steps:
+            - name: CheckOut
+              uses: actions/checkout@v4
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: wasm32-unknown-unknown
+                  components: rustfmt, clippy, cargo
+            - name: Cache Rust
+              uses: Swatinem/rust-cache@v2
+            - name: Setup Deno
+              uses: denoland/setup-deno@v1
+              with:
+                deno-version: v1.x
+            - name: <Bugi> Build PDKs (test)
+              run: |
+                deno run -A bugi/tests/build_pdk.ts
+            - name: Run Tests
+              run: |
+                cargo test --workspace

@@ -97,10 +97,12 @@ impl PluginRef {
                 let ins = linker
                     .instantiate(&mut *cacher.get_store().write().unwrap(), &module.module)?;
                 cacher.add_ins(self.id, ins);
+                std::mem::drop(module);
                 self.call(Some(cacher), name, args)
             }
         } else {
             let cacher = PluginCacher::new(&self.univ.upgrade().unwrap());
+            std::mem::drop(module);
             self.call(Some(cacher), name, args)
         }
     }

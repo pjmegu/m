@@ -1102,6 +1102,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "t-pdk"
+version = "0.1.0"
+dependencies = [
+ "bugi-pdk",
+ "serde",
+]
+
+[[package]]
+name = "t-sdk"
+version = "0.1.0"
+
+[[package]]
 name = "target-lexicon"
 version = "0.12.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
