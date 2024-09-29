@@ -10,7 +10,7 @@ const wasm_lists = [
 ];
 
 for (const wasm of wasm_lists) {
-    await $`cargo build -r --example ${wasm}`;
+    await $`cd t-pdk && cargo build -r --example ${wasm}`;
 }
 
 // copy wasms to sdk test folder

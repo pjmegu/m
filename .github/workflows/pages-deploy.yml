@@ -15,9 +15,14 @@ jobs:
             - name: Setup Pages Dir
               run: |
                 mkdir pages
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: wasm32-unknown-unknown
+                  components: rustfmt, clippy, cargo
             - name: Build Rust Documents
               run: |
-                cargo doc --no-deps --document-private-items --workspace
+                cargo doc --no-deps --document-private-items --workspace --exclude simple-sdk --exclude simple-pdk
                 mv target/doc pages/rust
             - name: Deploy to GitHub Pages
               uses: actions/upload-pages-artifact@v3
