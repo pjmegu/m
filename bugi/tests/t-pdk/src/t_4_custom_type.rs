@@ -6,12 +6,14 @@ provide_desc!("func");
 #[derive(Deserialize)]
 struct Args {
     i: i32,
+    #[allow(dead_code)]
     j: i32,
 }
 
 #[derive(Deserialize)]
 struct Args2 {
     k: i32,
+    #[allow(dead_code)]
     l: i32,
 }
 
