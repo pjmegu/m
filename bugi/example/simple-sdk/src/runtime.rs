@@ -12,7 +12,7 @@ fn main() {
     let univ = PluginUniverse::new();
     let pref = univ.load_plugin_from_binary(PLUGIN_BIN).unwrap();
     let cacher = univ.make_cacher();
-    let result = pref.call::<_, (Test, Test)>(
+    pref.call::<_, (Test, Test)>(
         Some(cacher.clone()),
         "ttttt".to_string(),
         &(Test {
@@ -20,5 +20,5 @@ fn main() {
         },),
     )
     .unwrap();
-    dbg!(result);
+    // dbg!(result);
 }

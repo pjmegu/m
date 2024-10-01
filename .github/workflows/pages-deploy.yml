@@ -22,7 +22,7 @@ jobs:
                   components: rustfmt, clippy, cargo
             - name: Build Rust Documents
               run: |
-                cargo doc --no-deps --document-private-items --workspace --exclude simple-sdk --exclude simple-pdk
+                cargo doc --no-deps --document-private-items --workspace
                 mv target/doc pages/rust
             - name: Deploy to GitHub Pages
               uses: actions/upload-pages-artifact@v3

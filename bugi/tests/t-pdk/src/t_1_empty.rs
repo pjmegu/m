@@ -1,4 +1,6 @@
-use bugi_pdk::export;
+use bugi_pdk::{export, provide_desc};
+
+provide_desc!("t_1_empty");
 
 #[export]
 fn add() {

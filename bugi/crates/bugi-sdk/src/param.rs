@@ -27,6 +27,8 @@ macro_rules! foreach_func_sig {
 /// an array at [rmp_serde::to_vec_named] when serializing.
 pub trait PluginInput: Serialize {}
 
+impl PluginInput for () {}
+
 macro_rules! gen_plugin_input {
     ($($type:ident),+) => {
         impl<$($type: Serialize),+> PluginInput for ($($type),+,) {}

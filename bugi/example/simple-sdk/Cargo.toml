@@ -6,3 +6,7 @@ edition = "2021"
 [dependencies]
 bugi-sdk.workspace = true
 serde.workspace = true
+
+[[example]]
+name = "simple-sdk"
+path = "src/runtime.rs"

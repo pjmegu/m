@@ -27,4 +27,4 @@ jobs:
                 deno run -A bugi/tests/build_pdk.ts
             - name: Run Tests
               run: |
-                cargo test --workspace --exclude simple-sdk --exclude simple-pdk
+                cargo test --workspace

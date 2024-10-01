@@ -9,5 +9,7 @@ serde.workspace = true
 
 bugi-pdk.workspace = true
 
-[lib]
+[[example]]
+name = "simple-pdk"
+path = "src/plug.rs"
 crate-type = ["cdylib"]

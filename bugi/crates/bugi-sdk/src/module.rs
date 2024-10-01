@@ -141,7 +141,13 @@ impl PluginInstance {
         name: &String,
         args: &A,
     ) -> Result<R> {
-        let arg_data = rmp_serde::to_vec_named(args)?;
+        // Types with zero size cause a panic when read as an array in PDK, 
+        // so use a safe type instead.
+        let arg_data = if std::mem::size_of::<A>() == 0 {
+            rmp_serde::to_vec_named(&((),))?
+        } else {
+            rmp_serde::to_vec_named(args)?
+        };
 
         let mem_ptr = self.call_low_mem_malloc(&mut *store, arg_data.len() as u32)?;
         let mem = self

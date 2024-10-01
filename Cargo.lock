@@ -1112,6 +1112,10 @@ dependencies = [
 [[package]]
 name = "t-sdk"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bugi-sdk",
+]
 
 [[package]]
 name = "target-lexicon"
