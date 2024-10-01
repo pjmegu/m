@@ -102,7 +102,7 @@ pub(crate) fn set_hostfunc(linker: &mut Linker<OnceLock<PluginCacher>>) {
                 memory
                     .write(&mut caller, ptr[0].unwrap_i32() as usize, &f_called)
                     .unwrap();
-                
+
                 // return ptr adn len
                 (ptr[0].unwrap_i32() as u32, f_called.len() as u32)
             },

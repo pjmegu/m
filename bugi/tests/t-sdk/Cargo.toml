@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 bugi-sdk.workspace = true
 anyhow.workspace = true
+serde.workspace = true

@@ -9,18 +9,21 @@ use wasmtime::{Engine, Module};
 
 use anyhow::Result;
 
-use crate::{module::{get_desc, PluginID, PluginModule, PluginRef}, PluginCacher};
+use crate::{
+    module::{get_desc, PluginID, PluginModule, PluginRef},
+    PluginCacher,
+};
 
 const RAND_SEED: u64 = 20240911;
 
 /// A management system for the entire plugin.
 /// This is where plug-ins are loaded.
-/// 
+///
 /// # Example
 /// ```rust,ignore
-/// 
+///
 /// let univ = PluginUniverse::new();
-/// 
+///
 /// ```
 pub struct PluginUniverse(Arc<RwLock<PluginUniverseInner>>);
 
@@ -107,12 +110,7 @@ impl PluginUniverse {
     }
 
     pub(crate) fn get_module(&self, id: PluginID) -> Option<Arc<RwLock<PluginModule>>> {
-        self.0
-            .read()
-            .unwrap()
-            .module
-            .get(&id)
-            .map(Arc::clone)
+        self.0.read().unwrap().module.get(&id).map(Arc::clone)
     }
 
     pub(crate) fn get_str_id(&self, id: &str) -> Option<PluginID> {

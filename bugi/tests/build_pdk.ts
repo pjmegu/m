@@ -7,6 +7,8 @@ $.cd(import.meta);
 const wasm_lists = [
     "t_1_empty",
     "t_2_return",
+    "t_3_get_args",
+    "t_4_custom_type",
 ];
 
 for (const wasm of wasm_lists) {

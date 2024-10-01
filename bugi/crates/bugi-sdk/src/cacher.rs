@@ -12,7 +12,7 @@ use crate::{
 
 /// Cache instances of plugins.  
 /// It is recommended that this structure exist per thread, but it can be shared among threads.  
-/// When calling a plugin, it may or may not be included in the arguments, 
+/// When calling a plugin, it may or may not be included in the arguments,
 /// but the cacher is created inside the function and discarded at the end of the function call.
 #[derive(Clone)]
 pub struct PluginCacher(Arc<RwLock<PluginCacherInner>>);
@@ -53,7 +53,11 @@ impl PluginCacher {
     }
 
     #[inline]
-    pub(crate) fn get_or_add_ins(&self, id: PluginID, ins: impl FnOnce() -> wasmtime::Instance) -> Arc<PluginInstance>{
+    pub(crate) fn get_or_add_ins(
+        &self,
+        id: PluginID,
+        ins: impl FnOnce() -> wasmtime::Instance,
+    ) -> Arc<PluginInstance> {
         let mut data = self.0.write().unwrap();
         if let std::collections::hash_map::Entry::Vacant(e) = data.ins.entry(id) {
             let ins = Arc::new(PluginInstance { ins: ins() });
@@ -72,4 +76,3 @@ impl PluginCacher {
         self.0.read().unwrap().univ.clone()
     }
 }
-

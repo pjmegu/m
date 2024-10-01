@@ -14,4 +14,3 @@ pub extern "C" fn mem_free(ptr: u32, len: u32) {
     let layout = Layout::array::<u8>(len as usize).unwrap();
     unsafe { std::alloc::dealloc(ptr as *mut u8, layout) };
 }
-

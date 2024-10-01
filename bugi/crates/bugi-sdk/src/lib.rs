@@ -14,14 +14,14 @@
 //!
 //! I also wanted to create my own.
 
-pub(crate) mod module;
-pub(crate) mod spec_type;
-pub(crate) mod universe;
-pub(crate) mod param;
 pub(crate) mod cacher;
 pub(crate) mod hostfunc;
+pub(crate) mod module;
+pub(crate) mod param;
+pub(crate) mod spec_type;
+pub(crate) mod universe;
 
-pub use universe::PluginUniverse;
+pub use cacher::*;
 pub use module::*;
 pub use param::*;
-pub use cacher::*;
+pub use universe::PluginUniverse;

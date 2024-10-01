@@ -76,13 +76,8 @@ impl PluginRef {
         name: String,
         args: &A,
     ) -> Result<R> {
-        let binding = self
-            .module
-            .upgrade()
-            .context("module get error")?;
-        let module = binding
-            .write()
-            .unwrap();
+        let binding = self.module.upgrade().context("module get error")?;
+        let module = binding.write().unwrap();
         let engine = self.univ.upgrade().unwrap().get_engine();
 
         if let Some(cacher) = cacher {
@@ -141,7 +136,7 @@ impl PluginInstance {
         name: &String,
         args: &A,
     ) -> Result<R> {
-        // Types with zero size cause a panic when read as an array in PDK, 
+        // Types with zero size cause a panic when read as an array in PDK,
         // so use a safe type instead.
         let arg_data = if std::mem::size_of::<A>() == 0 {
             rmp_serde::to_vec_named(&((),))?

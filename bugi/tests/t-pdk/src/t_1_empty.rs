@@ -1,8 +1,8 @@
 use bugi_pdk::{export, provide_desc};
 
-provide_desc!("t_1_empty");
+provide_desc!("func");
 
 #[export]
-fn add() {
+fn func() {
     _ = 1 + 1;
 }

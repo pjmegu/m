@@ -23,7 +23,7 @@ macro_rules! foreach_func_sig {
 
 /// Type trait that can be set as a plugin argument.
 /// The implemented tuple types of [serde::Serialize] can be used.
-/// When implementing this, the type must be one that can be serialized into 
+/// When implementing this, the type must be one that can be serialized into
 /// an array at [rmp_serde::to_vec_named] when serializing.
 pub trait PluginInput: Serialize {}
 
