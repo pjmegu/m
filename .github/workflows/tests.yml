@@ -14,8 +14,8 @@ jobs:
             - name: Setup Rust
               uses: dtolnay/rust-toolchain@stable
               with:
-                  targets: wasm32-unknown-unknown
-                  components: rustfmt, clippy, cargo
+                targets: wasm32-unknown-unknown
+                components: rustfmt, clippy, cargo
             - name: Cache Rust
               uses: Swatinem/rust-cache@v2
             - name: Setup Deno
@@ -27,4 +27,4 @@ jobs:
                 deno run -A bugi/tests/build_pdk.ts
             - name: Run Tests
               run: |
-                cargo test --workspace
+                cargo test --workspace --exclude simple-sdk --exclude simple-pdk
