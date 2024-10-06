@@ -1,0 +1,10 @@
+[package]
+name = "bugic-share"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+thiserror.workspace = true
+serde.workspace = true
+rmp-serde.workspace = true
+bitcode.workspace = true

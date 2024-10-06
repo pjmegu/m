@@ -1,0 +1,21 @@
+[package]
+name = "bugic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasmer = "4.3.7"
+bitcode.workspace = true
+rmpv.workspace = true
+rmp-serde.workspace = true
+serde.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+bugic-share.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "m"
+harness = false
