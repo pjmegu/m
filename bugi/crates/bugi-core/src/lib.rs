@@ -1,4 +1,4 @@
-pub use bugic_share::*;
+pub use bugi_share::*;
 
 pub trait PluginSystem: Send + Sync {
     /// call a plugin function
@@ -8,7 +8,7 @@ pub trait PluginSystem: Send + Sync {
 #[derive(thiserror::Error, Debug)]
 pub enum BugiError {
     #[error("cannot serialize: {0}")]
-    CannotSerialize(#[from] bugic_share::SerializeError),
+    CannotSerialize(#[from] bugi_share::SerializeError),
 
     #[error("the plugin ID already exists: {0}")]
     PluginIdExists(String),

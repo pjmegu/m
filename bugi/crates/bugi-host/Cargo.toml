@@ -1,7 +1,7 @@
 [package]
-name = "bugic-host"
+name = "bugi-host"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bugic-core = { path = "../bugic-core" }
+bugi-core = { path = "../bugi-core" }

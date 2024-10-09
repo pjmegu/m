@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use bugic_core::{BugiError, PluginSystem};
-use bugic_core::{ParamListFrom, SerializeTag, ToByte};
+use bugi_core::{BugiError, PluginSystem};
+use bugi_core::{ParamListFrom, SerializeTag, ToByte};
 
 pub(crate) type HostPluginFuncRaw = Box<dyn (Fn(&[u8]) -> Vec<u8>) + Send + Sync>;
 

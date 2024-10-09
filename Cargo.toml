@@ -1,7 +1,5 @@
 [workspace]
-members = [
-    "bugic/crates/*",
-]
+members = ["bugi/crates/*"]
 resolver = "1"
 
 [workspace.dependencies]

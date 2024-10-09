@@ -119,34 +119,34 @@ dependencies = [
 ]
 
 [[package]]
-name = "bugic"
+name = "bugi"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "bugic-core",
- "bugic-host",
- "bugic-share",
+ "bugi-core",
+ "bugi-host",
+ "bugi-share",
  "thiserror",
  "wasmer",
 ]
 
 [[package]]
-name = "bugic-core"
+name = "bugi-core"
 version = "0.1.0"
 dependencies = [
- "bugic-share",
+ "bugi-share",
  "thiserror",
 ]
 
 [[package]]
-name = "bugic-host"
+name = "bugi-host"
 version = "0.1.0"
 dependencies = [
- "bugic-core",
+ "bugi-core",
 ]
 
 [[package]]
-name = "bugic-share"
+name = "bugi-share"
 version = "0.1.0"
 dependencies = [
  "bitcode",
@@ -156,11 +156,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "bugic-tests"
+name = "bugi-tests"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "bugic",
+ "bugi",
 ]
 
 [[package]]

@@ -14,11 +14,12 @@ pub(crate) type ArRw<T> = Arc<RwLock<T>>;
 
 // --- Re-exports ---
 
-pub use bugic_core::*;
-pub use bugic_share::*;
+pub use bugi_core::*;
+#[allow(unused_imports)]
+pub use bugi_share::*;
 
 #[cfg(feature = "plug-host")]
-pub use bugic_host::*;
+pub use bugi_host::*;
 
 // --- Universe ---
 
@@ -65,7 +66,7 @@ impl Universe {
     pub fn add_plugin(
         &self,
         str_id: &str,
-        detail: impl bugic_core::PluginSystem + 'static,
+        detail: impl bugi_core::PluginSystem + 'static,
     ) -> Result<PluginRef, BugiError> {
         self.add_plugin_raw(Plugin::make_plugin(str_id, detail))
     }

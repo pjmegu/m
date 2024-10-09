@@ -1,7 +1,7 @@
 #![cfg(test)]
 
 use anyhow::*;
-use bugic::*;
+use bugi::*;
 
 #[test]
 fn host_call() -> Result<()> {

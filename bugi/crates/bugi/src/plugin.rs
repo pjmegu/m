@@ -1,7 +1,7 @@
 use std::sync::Weak;
 
-use bugic_core::{BugiError, PluginSystem};
-use bugic_share::{FromByte, ParamListTo, SerializeTag};
+use bugi_core::{BugiError, PluginSystem};
+use bugi_share::{FromByte, ParamListTo, SerializeTag};
 
 /// plugin (original)
 pub struct Plugin {
