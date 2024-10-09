@@ -1,7 +1,7 @@
 #[derive(thiserror::Error, Debug)]
 pub enum SerializeError {
     #[error("other libraries error")]
-    Other,
+    Other(Box<dyn std::any::Any + Send + Sync>),
 
     #[cfg(feature = "ser-rmp")]
     #[error(transparent)]

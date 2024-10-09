@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bugi_core::{BugiError, PluginSystem};
 use bugi_core::{ParamListFrom, SerializeTag, ToByte};
 
-pub(crate) type HostPluginFuncRaw = Box<dyn (Fn(&[u8]) -> Vec<u8>) + Send + Sync>;
+pub(crate) type HostPluginFuncRaw = Box<dyn (Fn(&[u8]) -> Result<Vec<u8>, BugiError>) + Send + Sync>;
 
 #[derive(Default)]
 pub struct HostPlugin {
@@ -25,9 +25,9 @@ impl HostPlugin {
             (
                 SType::get_abi_id(),
                 Box::new(move |arg| {
-                    let arg = Param::from_byte(arg).unwrap();
+                    let arg = Param::from_byte(arg).map_err(BugiError::CannotSerialize)?;
                     let result = func(arg);
-                    result.to_byte().unwrap()
+                    result.to_byte().map_err(BugiError::CannotSerialize)
                 }),
             ),
         );
@@ -48,6 +48,6 @@ impl PluginSystem for HostPlugin {
             return Err(BugiError::PluginAbiError(func.0));
         }
 
-        Ok(func.1(param))
+        func.1(param)
     }
 }

@@ -11,7 +11,7 @@ pub struct Plugin {
 
 impl Plugin {
     /// Create a new Host Plugin
-    pub fn make_plugin(str_id: &str, detail: impl PluginSystem + 'static) -> Self {
+    pub fn new(str_id: &str, detail: impl PluginSystem + 'static) -> Self {
         Self {
             str_id: str_id.to_string(),
             detail: Box::new(detail),
@@ -19,7 +19,7 @@ impl Plugin {
     }
 
     /// Get the string ID of the plugin
-    pub fn get_str_id(&self) -> &String {
+    pub fn get_str_id(&self) -> &str {
         &self.str_id
     }
 }

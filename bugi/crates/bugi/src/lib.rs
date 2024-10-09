@@ -47,9 +47,11 @@ impl Universe {
         let mut inner = self.0.write().unwrap();
 
         // Check ID
+        // TODO: This is O(n) and can be optimized to use a HashSet
+        // Modify this if performance becomes an issue
         for (_, p) in inner.plugins.iter() {
             if p.get_str_id() == plugin.get_str_id() {
-                return Err(BugiError::PluginIdExists(plugin.get_str_id().clone()));
+                return Err(BugiError::PluginIdExists(plugin.get_str_id().to_string()));
             }
         }
 
@@ -68,7 +70,7 @@ impl Universe {
         str_id: &str,
         detail: impl bugi_core::PluginSystem + 'static,
     ) -> Result<PluginRef, BugiError> {
-        self.add_plugin_raw(Plugin::make_plugin(str_id, detail))
+        self.add_plugin_raw(Plugin::new(str_id, detail))
     }
 }
 
