@@ -2,12 +2,7 @@ pub use bugic_share::*;
 
 pub trait PluginSystem: Send + Sync {
     /// call a plugin function
-    fn raw_call(
-        &self,
-        symbol: &str,
-        param: &[u8],
-        abi: u8,
-    ) -> Result<Vec<u8>, BugiError>;
+    fn raw_call(&self, symbol: &str, param: &[u8], abi: u8) -> Result<Vec<u8>, BugiError>;
 }
 
 #[derive(thiserror::Error, Debug)]

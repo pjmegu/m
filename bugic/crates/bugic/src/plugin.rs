@@ -12,7 +12,10 @@ pub struct Plugin {
 impl Plugin {
     /// Create a new Host Plugin
     pub fn make_plugin(str_id: &str, detail: impl PluginSystem + 'static) -> Self {
-        Self { str_id: str_id.to_string(), detail: Box::new(detail) }
+        Self {
+            str_id: str_id.to_string(),
+            detail: Box::new(detail),
+        }
     }
 
     /// Get the string ID of the plugin
@@ -34,11 +37,7 @@ impl PluginRef {
     }
 
     /// Call the plugin
-    pub fn call<
-        SType: SerializeTag,
-        Param: ParamListTo<SType>,
-        Output: FromByte<SType>,
-    >(
+    pub fn call<SType: SerializeTag, Param: ParamListTo<SType>, Output: FromByte<SType>>(
         &self,
         symbol: &str,
         param: Param,
@@ -46,9 +45,7 @@ impl PluginRef {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-        let result =
-            plug.detail
-                .raw_call(symbol, &param, SType::get_abi_id())?;
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id())?;
         Ok(Output::from_byte(&result)?)
     }
 }

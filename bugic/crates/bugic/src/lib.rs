@@ -14,8 +14,8 @@ pub(crate) type ArRw<T> = Arc<RwLock<T>>;
 
 // --- Re-exports ---
 
-pub use bugic_share::*;
 pub use bugic_core::*;
+pub use bugic_share::*;
 
 #[cfg(feature = "plug-host")]
 pub use bugic_host::*;

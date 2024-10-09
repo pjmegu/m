@@ -22,9 +22,9 @@ jobs:
               uses: denoland/setup-deno@v1
               with:
                 deno-version: v1.x
-            - name: <Bugi> Build PDKs (test)
-              run: |
-                deno run -A bugi/tests/build_pdk.ts
             - name: Run Tests
               run: |
-                cargo test --workspace --exclude simple-sdk --exclude simple-pdk
+                cargo test --workspace
+            - name: Run Format Check
+              run: |
+                cargo fmt --all --check

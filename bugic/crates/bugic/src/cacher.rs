@@ -1,3 +1,1 @@
-pub struct Cacher {
-    
-}
+pub struct Cacher {}
