@@ -7,13 +7,14 @@ edition = "2021"
 wasmer = { version = "4.3.7", optional = true }
 anyhow.workspace = true
 thiserror.workspace = true
-bugic-share.workspace = true
-bugic-core.workspace = true
-bugic-host.workspace = true
+
+bugic-share = { path = "../bugic-share" }
+bugic-core = { path = "../bugic-core" }
+bugic-host = { path = "../bugic-host", optional = true }
 
 [features]
 default = ["plug-host", "ser-rmp"]
 plug-wasm = ["wasmer"]
-plug-host = []
+plug-host = ["bugic-host"]
 ser-rmp = ["bugic-share/ser-rmp"]
 ser-bitcode = ["bugic-share/ser-bitcode"]

@@ -1,0 +1,8 @@
+[package]
+name = "bugic-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bugic = { path = "../bugic", features = ["ser-bitcode"] }
+anyhow.workspace = true

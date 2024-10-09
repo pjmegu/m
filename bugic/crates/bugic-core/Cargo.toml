@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 thiserror.workspace = true
-bugic-share.workspace = true
+
+bugic-share = { path = "../bugic-share" }

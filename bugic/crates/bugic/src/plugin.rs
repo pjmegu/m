@@ -35,10 +35,9 @@ impl PluginRef {
 
     /// Call the plugin
     pub fn call<
-        SInput: SerializeTag,
-        SOutput: SerializeTag,
-        Param: ParamListTo<SInput>,
-        Output: FromByte<SOutput>,
+        SType: SerializeTag,
+        Param: ParamListTo<SType>,
+        Output: FromByte<SType>,
     >(
         &self,
         symbol: &str,
@@ -47,13 +46,13 @@ impl PluginRef {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
         plug.detail
-            .check_symbol_abi(symbol, SInput::get_abi_id(), SOutput::get_abi_id())
-            .map_err(|(inp, out)| BugiError::PluginAbiError(inp, out))?;
+            .check_symbol_abi(symbol, SType::get_abi_id())
+            .map_err(BugiError::PluginAbiError)?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
         let result =
             plug.detail
-                .raw_call(symbol, &param, SInput::get_abi_id(), SOutput::get_abi_id())?;
+                .raw_call(symbol, &param, SType::get_abi_id())?;
         Ok(Output::from_byte(&result)?)
     }
 }

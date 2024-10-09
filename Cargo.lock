@@ -156,6 +156,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "bugic-tests"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bugic",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

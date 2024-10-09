@@ -3,7 +3,6 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use bugic_core::{BugiError, PluginId};
 use plugin::{Plugin, PluginRef};
 
 pub mod cacher;
@@ -13,7 +12,13 @@ pub mod plugin;
 
 pub(crate) type ArRw<T> = Arc<RwLock<T>>;
 
-pub use bugic_share;
+// --- Re-exports ---
+
+pub use bugic_share::*;
+pub use bugic_core::*;
+
+#[cfg(feature = "plug-host")]
+pub use bugic_host::*;
 
 // --- Universe ---
 

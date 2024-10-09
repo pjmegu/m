@@ -6,17 +6,15 @@ pub trait PluginSystem: Send + Sync {
         &self,
         symbol: &str,
         param: &[u8],
-        abi_arg: u8,
-        abi_res: u8,
+        abi: u8,
     ) -> Result<Vec<u8>, BugiError>;
 
     /// check the ABI of a symbol
     fn check_symbol_abi(
         &self,
         symbol: &str,
-        abi_arg: u8,
-        abi_res: u8,
-    ) -> Result<(), (u8, u8)>;
+        abi: u8,
+    ) -> Result<(), u8>;
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -33,8 +31,8 @@ pub enum BugiError {
     #[error("plugin call error: {0}")]
     PluginCallError(String),
 
-    #[error("plugin abi error: {0}, {1}")]
-    PluginAbiError(u8, u8),
+    #[error("plugin abi error: expected abi = {0}")]
+    PluginAbiError(u8),
 }
 
 /// Plugin Reference ID

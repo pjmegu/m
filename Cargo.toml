@@ -20,9 +20,3 @@ bitcode = "0.6.3"
 proc-macro2 = { version = "1.0.87" }
 syn = { version = "2.0.79", features = ["full"] }
 quote = { version = "1.0.37" }
-
-# bugic
-bugic-share = { path = "bugic/crates/bugic-share" }
-bugic = { path = "bugic/crates/bugic" }
-bugic-host = { path = "bugic/crates/bugic-host" }
-bugic-core = { path = "bugic/crates/bugic-core" }
