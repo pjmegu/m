@@ -1,14 +1,6 @@
 [workspace]
 members = [
-    # bugi
-    # "bugi/crates/*",
     "bugic/crates/*",
-
-    # examples
-    # "bugi/example/*",
-
-    # tests
-    # "bugi/tests/*",
 ]
 resolver = "1"
 
@@ -29,19 +21,8 @@ proc-macro2 = { version = "1.0.87" }
 syn = { version = "2.0.79", features = ["full"] }
 quote = { version = "1.0.37" }
 
-# Workspace Crates
-
-# bugi
-
-# bugi-cli = { path = "bugi/crates/bugi-cli" } # cli for check plugin
-
-# bugi-pdk = { path = "bugi/crates/bugi-pdk" } # pdk
-# bugi-pdk-derive = { path = "bugi/crates/bugi-pdk-derive" } # macro def for pdk
-
-# bugi-sdk = { path = "bugi/crates/bugi-sdk" } # sdk
-
-# bugi-macro = { path = "bugi/crates/bugi-macro" } # macro for pdk
-
 # bugic
-bugic-share = { path = "bugic/crates/bugic-share" } # share
-bugic = { path = "bugic/crates/bugic" }             # sdk
+bugic-share = { path = "bugic/crates/bugic-share" }
+bugic = { path = "bugic/crates/bugic" }
+bugic-host = { path = "bugic/crates/bugic-host" }
+bugic-core = { path = "bugic/crates/bugic-core" }

@@ -8,6 +8,8 @@ wasmer = { version = "4.3.7", optional = true }
 anyhow.workspace = true
 thiserror.workspace = true
 bugic-share.workspace = true
+bugic-core.workspace = true
+bugic-host.workspace = true
 
 [features]
 default = ["plug-host", "ser-rmp"]

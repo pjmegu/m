@@ -3,13 +3,10 @@ use std::{
     sync::{Arc, RwLock},
 };
 
+use bugic_core::{BugiError, PluginId};
 use plugin::{Plugin, PluginRef};
-use thiserror::Error;
 
 pub mod cacher;
-
-#[cfg(feature = "plug-host")]
-pub mod host_plug;
 pub mod plugin;
 
 // --- Internal Types ---
@@ -30,12 +27,6 @@ struct UniverseInner {
     next_id: PluginId,
 }
 
-/// Plugin Reference ID
-pub(crate) type PluginId = u32;
-
-/// Plugin Function Symbol
-pub(crate) type PluginSymbol = String;
-
 impl Universe {
     /// Create a new Universe
     pub fn new() -> Self {
@@ -46,7 +37,7 @@ impl Universe {
     }
 
     /// Add a plugin to the Universe
-    pub fn add_plugin(&self, plugin: Plugin) -> Result<PluginRef, BugiError> {
+    pub fn add_plugin_raw(&self, plugin: Plugin) -> Result<PluginRef, BugiError> {
         let mut inner = self.0.write().unwrap();
 
         // Check ID
@@ -65,15 +56,13 @@ impl Universe {
         Ok(PluginRef::new(Arc::downgrade(&plugin)))
     }
 
-    /// Add a host plugin to the Universe
-    #[cfg(feature = "plug-host")]
-    pub fn add_host_plugin(
+    /// add plugin with PluginSystem
+    pub fn add_plugin(
         &self,
-        str_id: String,
-        host: host_plug::HostPlugin,
+        str_id: &str,
+        detail: impl bugic_core::PluginSystem + 'static,
     ) -> Result<PluginRef, BugiError> {
-        let plugin = Plugin::make_host(str_id, host);
-        self.add_plugin(plugin)
+        self.add_plugin_raw(Plugin::make_plugin(str_id, detail))
     }
 }
 
@@ -81,24 +70,4 @@ impl Default for Universe {
     fn default() -> Self {
         Self::new()
     }
-}
-
-// --- Error ---
-
-#[derive(Error, Debug)]
-pub enum BugiError {
-    #[error("cannot serialize: {0}")]
-    CannotSerialize(#[from] bugic_share::SerializeError),
-
-    #[error("the plugin ID already exists: {0}")]
-    PluginIdExists(String),
-
-    #[error("plugin is dropped")]
-    PluginDropped,
-
-    #[error("plugin call error: {0}")]
-    PluginCallError(String),
-
-    #[error("plugin abi error: {0}, {1}")]
-    PluginAbiError(u8, u8),
 }

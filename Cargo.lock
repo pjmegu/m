@@ -123,9 +123,26 @@ name = "bugic"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bugic-core",
+ "bugic-host",
  "bugic-share",
  "thiserror",
  "wasmer",
+]
+
+[[package]]
+name = "bugic-core"
+version = "0.1.0"
+dependencies = [
+ "bugic-share",
+ "thiserror",
+]
+
+[[package]]
+name = "bugic-host"
+version = "0.1.0"
+dependencies = [
+ "bugic-core",
 ]
 
 [[package]]
