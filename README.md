@@ -1,9 +1,12 @@
 # The Megu Project
 
 <p align="center">
-   <a href="https://github.com/ProjectMegu/project-megu">
+   <a href="https://github.com/pjmegu/m">
       <img alt="project megu logo" src="docs/logo/megu.png">
    </a>
+   <img alt="GitHub Created At" src="https://img.shields.io/github/created-at/pjmegu/m">
+   <img alt="GitHub License" src="https://img.shields.io/github/license/pjmegu/m">
+   <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/pjmegu/m">
 </p>
 
 ## What's This?
