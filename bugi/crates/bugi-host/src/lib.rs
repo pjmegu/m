@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use bugi_core::{BugiError, PluginSystem};
 use bugi_core::{ParamListFrom, SerializeTag, ToByte};
 
-pub(crate) type HostPluginFuncRaw = Box<dyn (Fn(&[u8]) -> Result<Vec<u8>, BugiError>) + Send + Sync>;
+pub(crate) type HostPluginFuncRaw =
+    Box<dyn (Fn(&[u8]) -> Result<Vec<u8>, BugiError>) + Send + Sync>;
 
 #[derive(Default)]
 pub struct HostPlugin {
