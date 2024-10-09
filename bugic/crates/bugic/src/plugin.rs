@@ -1,11 +1,13 @@
 use std::sync::Weak;
 
+use bugic_share::{FromByte, ParamListTo, SerializeTag};
+
 use crate::{
     host_plug::HostPlugin,
-    param::{FromByte, ParamListTo, SerializeTag},
     BugiError, PluginSymbol,
 };
 
+/// plugin (original)
 pub struct Plugin {
     str_id: String,
     detail: Box<dyn PluginSystem>,
@@ -27,7 +29,16 @@ impl Plugin {
 }
 
 pub trait PluginSystem: Send + Sync {
-    fn raw_call(&self, symbol: &PluginSymbol, param: &[u8]) -> Result<Vec<u8>, BugiError>;
+    /// call a plugin function
+    fn raw_call(
+        &self,
+        symbol: &PluginSymbol,
+        param: &[u8],
+        abi_arg: u8,
+        abi_res: u8,
+    ) -> Result<Vec<u8>, BugiError>;
+
+    /// check the ABI of a symbol
     fn check_symbol_abi(
         &self,
         symbol: &PluginSymbol,
@@ -38,14 +49,8 @@ pub trait PluginSystem: Send + Sync {
 
 /// Reference to a plugin
 pub struct PluginRef {
-    // /// Plugin ID
-    // id: PluginId,
-
     /// Weak reference to the plugin of this reference
     pref: Weak<Plugin>,
-
-    // /// Weak reference to the universe of this plugin
-    // uref: UniverseWeak,
 }
 
 impl PluginRef {
@@ -67,14 +72,14 @@ impl PluginRef {
     ) -> Result<Output, BugiError> {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
-        plug.detail.check_symbol_abi(
-            &symbol,
-            SInput::get_abi_id(),
-            SOutput::get_abi_id(),
-        ).map_err(|(inp, out)| BugiError::PluginAbiError(inp, out))?;
+        plug.detail
+            .check_symbol_abi(&symbol, SInput::get_abi_id(), SOutput::get_abi_id())
+            .map_err(|(inp, out)| BugiError::PluginAbiError(inp, out))?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-        let result = plug.detail.raw_call(&symbol, &param)?;
+        let result =
+            plug.detail
+                .raw_call(&symbol, &param, SInput::get_abi_id(), SOutput::get_abi_id())?;
         Ok(Output::from_byte(&result)?)
     }
 }

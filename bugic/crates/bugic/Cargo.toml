@@ -4,18 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wasmer = "4.3.7"
-bitcode.workspace = true
-rmpv.workspace = true
-rmp-serde.workspace = true
-serde.workspace = true
+wasmer = { version = "4.3.7", optional = true }
 anyhow.workspace = true
 thiserror.workspace = true
 bugic-share.workspace = true
 
-[dev-dependencies]
-criterion.workspace = true
-
-[[bench]]
-name = "m"
-harness = false
+[features]
+default = ["plug-host", "ser-rmp"]
+plug-wasm = ["wasmer"]
+plug-host = []
+ser-rmp = ["bugic-share/ser-rmp"]
+ser-bitcode = ["bugic-share/ser-bitcode"]

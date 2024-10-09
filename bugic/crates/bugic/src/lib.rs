@@ -3,33 +3,26 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use host_plug::HostPlugin;
 use plugin::{Plugin, PluginRef};
 use thiserror::Error;
 
 pub mod cacher;
+
+#[cfg(feature = "plug-host")]
 pub mod host_plug;
 pub mod plugin;
 
 // --- Internal Types ---
 
 pub(crate) type ArRw<T> = Arc<RwLock<T>>;
-// pub(crate) type WeRw<T> = Weak<RwLock<T>>;
 
-// /// Environment to pass to host functions
-// pub(crate) type RuntimeEnv = (Universe, Cacher);
-
-pub use bugic_share as param;
+pub use bugic_share;
 
 // --- Universe ---
 
 /// Stores plugins
 #[derive(Clone)]
 pub struct Universe(ArRw<UniverseInner>);
-
-// /// Weak reference to Universe
-// #[derive(Clone)]
-// pub struct UniverseWeak(WeRw<UniverseInner>);
 
 /// Inner data of Universe
 struct UniverseInner {
@@ -73,10 +66,11 @@ impl Universe {
     }
 
     /// Add a host plugin to the Universe
+    #[cfg(feature = "plug-host")]
     pub fn add_host_plugin(
         &self,
         str_id: String,
-        host: HostPlugin,
+        host: host_plug::HostPlugin,
     ) -> Result<PluginRef, BugiError> {
         let plugin = Plugin::make_host(str_id, host);
         self.add_plugin(plugin)
@@ -94,7 +88,7 @@ impl Default for Universe {
 #[derive(Error, Debug)]
 pub enum BugiError {
     #[error("cannot serialize: {0}")]
-    CannotSerialize(#[from] param::SerializeError),
+    CannotSerialize(#[from] bugic_share::SerializeError),
 
     #[error("the plugin ID already exists: {0}")]
     PluginIdExists(String),

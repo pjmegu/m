@@ -5,6 +5,11 @@ edition = "2021"
 
 [dependencies]
 thiserror.workspace = true
-serde.workspace = true
-rmp-serde.workspace = true
-bitcode.workspace = true
+bitcode = { workspace = true, optional = true }
+rmp-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+
+[features]
+default = ["ser-rmp"]
+ser-rmp = ["rmp-serde", "serde"]
+ser-bitcode = ["bitcode"]
