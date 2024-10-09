@@ -1,0 +1,15 @@
+[package]
+name = "bugi-share"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+thiserror.workspace = true
+bitcode = { workspace = true, optional = true }
+rmp-serde = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+
+[features]
+default = ["ser-rmp"]
+ser-rmp = ["rmp-serde", "serde"]
+ser-bitcode = ["bitcode"]

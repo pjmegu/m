@@ -1,0 +1,9 @@
+[package]
+name = "bugi-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+thiserror.workspace = true
+
+bugi-share = { path = "../bugi-share" }

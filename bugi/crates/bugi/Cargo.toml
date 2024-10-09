@@ -1,0 +1,20 @@
+[package]
+name = "bugi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasmer = { version = "4.3.7", optional = true }
+anyhow.workspace = true
+thiserror.workspace = true
+
+bugi-share = { path = "../bugi-share" }
+bugi-core = { path = "../bugi-core" }
+bugi-host = { path = "../bugi-host", optional = true }
+
+[features]
+default = ["plug-host", "ser-rmp"]
+plug-wasm = ["wasmer"]
+plug-host = ["bugi-host"]
+ser-rmp = ["bugi-share/ser-rmp"]
+ser-bitcode = ["bugi-share/ser-bitcode"]
