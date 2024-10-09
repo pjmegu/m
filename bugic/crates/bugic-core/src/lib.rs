@@ -8,13 +8,6 @@ pub trait PluginSystem: Send + Sync {
         param: &[u8],
         abi: u8,
     ) -> Result<Vec<u8>, BugiError>;
-
-    /// check the ABI of a symbol
-    fn check_symbol_abi(
-        &self,
-        symbol: &str,
-        abi: u8,
-    ) -> Result<(), u8>;
 }
 
 #[derive(thiserror::Error, Debug)]

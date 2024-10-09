@@ -45,10 +45,6 @@ impl PluginRef {
     ) -> Result<Output, BugiError> {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
-        plug.detail
-            .check_symbol_abi(symbol, SType::get_abi_id())
-            .map_err(BugiError::PluginAbiError)?;
-
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
         let result =
             plug.detail
