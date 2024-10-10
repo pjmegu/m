@@ -5,8 +5,8 @@ use std::{
 
 use plugin::{Plugin, PluginRef};
 
-pub mod cacher;
-pub mod plugin;
+mod cacher;
+mod plugin;
 
 // --- Internal Types ---
 
@@ -14,12 +14,21 @@ pub(crate) type ArRw<T> = Arc<RwLock<T>>;
 
 // --- Re-exports ---
 
+pub use cacher::*;
+
 pub use bugi_core::*;
+
 #[allow(unused_imports)]
 pub use bugi_share::*;
 
+#[allow(unused_imports)]
+pub use plugin::*;
+
 #[cfg(feature = "plug-host")]
 pub use bugi_host::*;
+
+#[cfg(feature = "plug-wasm")]
+pub use bugi_wasm::*;
 
 // --- Universe ---
 
@@ -61,7 +70,7 @@ impl Universe {
         let plugin = Arc::new(plugin);
 
         inner.plugins.insert(id, Arc::clone(&plugin));
-        Ok(PluginRef::new(Arc::downgrade(&plugin)))
+        Ok(PluginRef::new(Arc::downgrade(&plugin), id))
     }
 
     /// add plugin with PluginSystem

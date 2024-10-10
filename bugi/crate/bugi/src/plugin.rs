@@ -1,6 +1,6 @@
 use std::sync::Weak;
 
-use bugi_core::{BugiError, PluginSystem};
+use bugi_core::{BugiError, CacheType, PluginId, PluginSystem};
 use bugi_share::{FromByte, ParamListTo, SerializeTag};
 
 /// plugin (original)
@@ -28,24 +28,48 @@ impl Plugin {
 pub struct PluginRef {
     /// Weak reference to the plugin of this reference
     pref: Weak<Plugin>,
+
+    /// plugin id
+    id: PluginId,
 }
 
 impl PluginRef {
     /// make a new PluginRef
-    pub(crate) fn new(pref: Weak<Plugin>) -> Self {
-        Self { pref }
+    pub(crate) fn new(pref: Weak<Plugin>, id: PluginId) -> Self {
+        Self { pref, id }
     }
 
     /// Call the plugin
-    pub fn call<SType: SerializeTag, Param: ParamListTo<SType>, Output: FromByte<SType>>(
+    pub fn call<SType: SerializeTag, Output: FromByte<SType>>(
         &self,
         symbol: &str,
-        param: Param,
+        param: impl ParamListTo<SType>,
     ) -> Result<Output, BugiError> {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id())?;
-        Ok(Output::from_byte(&result)?)
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), CacheType::CantCache)?;
+        Ok(Output::from_byte(&result.0)?)
+    }
+
+    /// Call with Cacher
+    pub fn call_cache<SType: SerializeTag, Output: FromByte<SType>>(
+        &self,
+        symbol: &str,
+        param: impl ParamListTo<SType>,
+        cacher: &crate::cacher::Cacher,
+    ) -> Result<Output, BugiError> {
+        let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
+
+        let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
+        let cache = match cacher.pop(self.id) {
+            Some(cache) => CacheType::Cached(cache),
+            None => CacheType::Cacheable,
+        };
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), cache)?;
+        if let Some(cache) = result.1 {
+            cacher.push(self.id, cache);
+        }
+        Ok(Output::from_byte(&result.0)?)
     }
 }

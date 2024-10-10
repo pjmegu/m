@@ -1,8 +1,18 @@
+use std::any::Any;
+
 pub use bugi_share::*;
 
+pub enum CacheType {
+    CantCache,
+    Cacheable,
+    Cached(Box<dyn Any>),
+}
+
+type ResultType = Result<(Vec<u8>, Option<Box<dyn Any>>), BugiError>;
 pub trait PluginSystem: Send + Sync {
     /// call a plugin function
-    fn raw_call(&self, symbol: &str, param: &[u8], abi: u8) -> Result<Vec<u8>, BugiError>;
+    /// if cache is unit value, it means no cache
+    fn raw_call(&self, symbol: &str, param: &[u8], abi: u8, cache: CacheType) -> ResultType;
 }
 
 #[derive(thiserror::Error, Debug)]

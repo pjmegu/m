@@ -1,0 +1,11 @@
+[package]
+name = "bugi-wasm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasmtime = "25.0.2"
+thiserror.workspace = true
+
+bugi-core = { path = "../bugi-core" }
+bugi-share = { path = "../bugi-share" }
