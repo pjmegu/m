@@ -1,5 +1,5 @@
 [workspace]
-members = ["bugi/crates/*"]
+members = ["bugi/crate/*"]
 resolver = "1"
 
 [workspace.dependencies]
