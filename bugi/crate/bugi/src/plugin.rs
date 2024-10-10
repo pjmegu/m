@@ -48,7 +48,7 @@ impl PluginRef {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), CacheType::CantCache)?;
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), CacheType::CantCache, None)?;
         Ok(Output::from_byte(&result.0)?)
     }
 
@@ -57,7 +57,7 @@ impl PluginRef {
         &self,
         symbol: &str,
         param: impl ParamListTo<SType>,
-        cacher: &crate::cacher::Cacher,
+        cacher: &bugi_core::Cacher,
     ) -> Result<Output, BugiError> {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
@@ -66,7 +66,7 @@ impl PluginRef {
             Some(cache) => CacheType::Cached(cache),
             None => CacheType::Cacheable,
         };
-        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), cache)?;
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), cache, Some(cacher.get_gcache()))?;
         if let Some(cache) = result.1 {
             cacher.push(self.id, cache);
         }

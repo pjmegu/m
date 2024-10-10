@@ -5,7 +5,6 @@ use std::{
 
 use plugin::{Plugin, PluginRef};
 
-mod cacher;
 mod plugin;
 
 // --- Internal Types ---
@@ -13,8 +12,6 @@ mod plugin;
 pub(crate) type ArRw<T> = Arc<RwLock<T>>;
 
 // --- Re-exports ---
-
-pub use cacher::*;
 
 pub use bugi_core::*;
 
