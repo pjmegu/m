@@ -1,18 +1,22 @@
-use std::{any::Any, collections::HashMap, sync::{Arc, RwLock}};
+use std::{
+    any::Any,
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
 pub use bugi_share::*;
-
-pub enum CacheType {
-    CantCache,
-    Cacheable,
-    Cached(Box<dyn Any>),
-}
 
 type ResultType = Result<(Vec<u8>, Option<Box<dyn Any>>), BugiError>;
 pub trait PluginSystem: Send + Sync {
     /// call a plugin function
     /// if cache is unit value, it means no cache
-    fn raw_call(&self, symbol: &str, param: &[u8], abi: u8, cache: CacheType, get_global: Option<GlobalCache>) -> ResultType;
+    fn raw_call(
+        &self,
+        symbol: &str,
+        param: &[u8],
+        abi: u8,
+        get_global: Option<CachePloxy>,
+    ) -> ResultType;
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -46,7 +50,7 @@ struct CacherInner {
 }
 
 impl Cacher {
-    pub fn new() -> Self{
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -70,30 +74,36 @@ impl Cacher {
         inner.cache_global.insert(id.to_string(), data);
     }
 
-    pub fn get_gcache(&self) -> GlobalCache {
+    pub fn get_gcache(&self, plugin_cache: Option<Box<dyn Any>>) -> CachePloxy {
         let a = (*self).clone();
         let b = (*self).clone();
 
-
-        GlobalCache::new(
+        CachePloxy::new(
             move |id| a.pop_global(id).unwrap(),
             move |id, data| b.push_global(id, data),
+            plugin_cache,
         )
     }
 }
 
-pub struct GlobalCache {
+pub struct CachePloxy {
     #[allow(clippy::type_complexity)]
     get: Box<dyn Fn(&str) -> Box<dyn Any>>,
     #[allow(clippy::type_complexity)]
     set: Box<dyn Fn(&str, Box<dyn Any>)>,
+    pub plugin_cache: Option<Box<dyn Any>>,
 }
 
-impl GlobalCache {
-    pub fn new(get: impl Fn(&str) -> Box<dyn Any> + 'static, set: impl Fn(&str, Box<dyn Any>) + 'static) -> Self {
+impl CachePloxy {
+    pub fn new(
+        get: impl Fn(&str) -> Box<dyn Any> + 'static,
+        set: impl Fn(&str, Box<dyn Any>) + 'static,
+        plugin_cache: Option<Box<dyn Any>>,
+    ) -> Self {
         Self {
             get: Box::new(get),
             set: Box::new(set),
+            plugin_cache,
         }
     }
 

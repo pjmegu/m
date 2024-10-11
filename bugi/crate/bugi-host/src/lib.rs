@@ -1,7 +1,7 @@
 use std::any::Any;
 use std::collections::HashMap;
 
-use bugi_core::{BugiError, CacheType, GlobalCache, PluginSystem};
+use bugi_core::{BugiError, CachePloxy, PluginSystem};
 use bugi_core::{ParamListFrom, SerializeTag, ToByte};
 
 pub(crate) type HostPluginFuncRaw =
@@ -42,8 +42,7 @@ impl PluginSystem for HostPlugin {
         symbol: &str,
         param: &[u8],
         abi: u8,
-        _cache: CacheType,
-        _get_global: Option<GlobalCache>,
+        _get_global: Option<CachePloxy>,
     ) -> Result<(Vec<u8>, Option<Box<dyn Any>>), BugiError> {
         let func = self
             .funcs

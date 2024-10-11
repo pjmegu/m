@@ -1,6 +1,6 @@
 use std::sync::Weak;
 
-use bugi_core::{BugiError, CacheType, PluginId, PluginSystem};
+use bugi_core::{BugiError, PluginId, PluginSystem};
 use bugi_share::{FromByte, ParamListTo, SerializeTag};
 
 /// plugin (original)
@@ -48,7 +48,7 @@ impl PluginRef {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), CacheType::CantCache, None)?;
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), None)?;
         Ok(Output::from_byte(&result.0)?)
     }
 
@@ -62,11 +62,7 @@ impl PluginRef {
         let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
 
         let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-        let cache = match cacher.pop(self.id) {
-            Some(cache) => CacheType::Cached(cache),
-            None => CacheType::Cacheable,
-        };
-        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), cache, Some(cacher.get_gcache()))?;
+        let result = plug.detail.raw_call(symbol, &param, SType::get_abi_id(), Some(cacher.get_gcache(cacher.pop(self.id))))?;
         if let Some(cache) = result.1 {
             cacher.push(self.id, cache);
         }
