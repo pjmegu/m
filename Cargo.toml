@@ -1,6 +1,6 @@
 [workspace]
 members = ["bugi/crate/*"]
-resolver = "1"
+resolver = "2"
 
 [workspace.dependencies]
 # General

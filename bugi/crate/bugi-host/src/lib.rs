@@ -1,7 +1,6 @@
-use std::any::Any;
 use std::collections::HashMap;
 
-use bugi_core::{BugiError, CachePloxy, PluginSystem};
+use bugi_core::{BugiError, EnvPloxy, PluginSystem};
 use bugi_core::{ParamListFrom, SerializeTag, ToByte};
 
 pub(crate) type HostPluginFuncRaw =
@@ -42,8 +41,8 @@ impl PluginSystem for HostPlugin {
         symbol: &str,
         param: &[u8],
         abi: u8,
-        _get_global: Option<CachePloxy>,
-    ) -> Result<(Vec<u8>, Option<Box<dyn Any>>), BugiError> {
+        _get_global: EnvPloxy,
+    ) -> Result<Vec<u8>, BugiError> {
         let func = self
             .funcs
             .get(symbol)
@@ -57,7 +56,7 @@ impl PluginSystem for HostPlugin {
         }
 
         match func.1(param) {
-            Ok(result) => Ok((result, None)),
+            Ok(result) => Ok(result),
             Err(e) => Err(e),
         }
     }

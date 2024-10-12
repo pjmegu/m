@@ -5,7 +5,8 @@ edition = "2021"
 
 [dependencies]
 wasmtime = "25.0.2"
+wasmparser = "0.219.1"
 thiserror.workspace = true
+anyhow.workspace = true
 
 bugi-core = { path = "../bugi-core" }
-bugi-share = { path = "../bugi-share" }
