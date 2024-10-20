@@ -1,10 +1,6 @@
 #![allow(clippy::type_complexity)]
 
-use std::{
-    any::Any,
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{any::Any, cell::RefCell, collections::HashMap, ops::Deref, rc::Rc};
 
 pub use bugi_share::*;
 
@@ -47,10 +43,10 @@ pub enum BugiError {
 /// Plugin Reference ID
 pub type PluginId = u32;
 
-pub type CacheData = Box<dyn Any + Send + Sync>;
+pub type CacheData = Box<dyn Any>;
 
 #[derive(Default, Clone)]
-pub struct Cacher(Arc<Mutex<CacherInner>>);
+pub struct Cacher(Rc<RefCell<CacherInner>>);
 
 #[derive(Default)]
 struct CacherInner {
@@ -64,37 +60,35 @@ impl Cacher {
     }
 
     pub fn pop(&self, id: PluginId) -> Option<CacheData> {
-        let mut inner = self.0.lock().unwrap();
-        inner.cache.remove(&id)
+        self.0.deref().borrow_mut().cache.remove(&id)
     }
 
     pub fn push(&self, id: PluginId, data: CacheData) {
-        let mut inner = self.0.lock().unwrap();
-        inner.cache.insert(id, data);
+        self.0.deref().borrow_mut().cache.insert(id, data);
     }
 
     pub fn pop_global(&self, id: &str) -> Option<CacheData> {
-        let mut inner = self.0.lock().unwrap();
-        inner.cache_global.remove(id)
+        self.0.deref().borrow_mut().cache_global.remove(id)
     }
 
     pub fn push_global(&self, id: &str, data: CacheData) {
-        let mut inner = self.0.lock().unwrap();
-        inner.cache_global.insert(id.to_string(), data);
+        self.0
+            .deref()
+            .borrow_mut()
+            .cache_global
+            .insert(id.to_string(), data);
     }
 }
 
-pub struct EnvPloxy(Arc<EnvPloxyInner>);
+pub struct EnvPloxy(Rc<EnvPloxyInner>);
 
 pub type CallUnivSig = dyn (Fn(
-        /*plugin id=*/ &str,
-        /*symbol=*/ &str,
-        /*arg=*/ &[u8],
-        /*abi id=*/ u8,
-        /*ploxy=*/ EnvPloxy,
-    ) -> Result<Vec<u8>, BugiError>)
-    + Send
-    + Sync;
+    /*plugin id=*/ &str,
+    /*symbol=*/ &str,
+    /*arg=*/ &[u8],
+    /*abi id=*/ u8,
+    /*ploxy=*/ EnvPloxy,
+) -> Result<Vec<u8>, BugiError>);
 
 struct EnvPloxyInner {
     pub cache: Option<CachePloxy>,
@@ -103,12 +97,8 @@ struct EnvPloxyInner {
 }
 
 impl EnvPloxy {
-    pub fn new(
-        cacher: Option<&Cacher>,
-        call_univ: Box<CallUnivSig>,
-        plug_id: PluginId,
-    ) -> Self {
-        Self(Arc::new(EnvPloxyInner {
+    pub fn new(cacher: Option<&Cacher>, call_univ: Box<CallUnivSig>, plug_id: PluginId) -> Self {
+        Self(Rc::new(EnvPloxyInner {
             cache: cacher.map(|cacher| CachePloxy {
                 get_global: {
                     let cacher = cacher.clone();
@@ -163,9 +153,9 @@ impl EnvPloxy {
 }
 
 pub struct CachePloxy {
-    pub get_global: Box<dyn (Fn(&str) -> Option<CacheData>) + Send + Sync>,
-    pub set_global: Box<dyn (Fn(&str, CacheData)) + Send + Sync>,
+    pub get_global: Box<dyn (Fn(&str) -> Option<CacheData>)>,
+    pub set_global: Box<dyn (Fn(&str, CacheData))>,
 
-    pub get_cache: Box<dyn (Fn() -> Option<CacheData>) + Send + Sync>,
-    pub set_cache: Box<dyn (Fn(CacheData)) + Send + Sync>,
+    pub get_cache: Box<dyn (Fn() -> Option<CacheData>)>,
+    pub set_cache: Box<dyn (Fn(CacheData))>,
 }

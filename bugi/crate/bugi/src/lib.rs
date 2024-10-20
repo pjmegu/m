@@ -5,6 +5,7 @@ use std::{
 
 use plugin::{Plugin, PluginRef};
 
+mod r#override;
 mod plugin;
 
 // --- Re-exports ---
@@ -16,6 +17,9 @@ pub use bugi_share::*;
 
 #[allow(unused_imports)]
 pub use plugin::*;
+
+#[allow(unused_imports)]
+pub use r#override::*;
 
 #[cfg(feature = "plug-host")]
 pub use bugi_host::*;

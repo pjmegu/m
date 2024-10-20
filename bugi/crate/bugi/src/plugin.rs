@@ -39,12 +39,12 @@ impl Plugin {
 /// Reference to a plugin
 pub struct PluginRef {
     /// Weak reference to the plugin of this reference
-    pref: Weak<Plugin>,
+    pub(crate) pref: Weak<Plugin>,
 
-    univ_ref: UniverseWeak,
+    pub(crate) univ_ref: UniverseWeak,
 
     /// plugin id
-    id: PluginId,
+    pub(crate) id: PluginId,
 }
 
 impl PluginRef {
@@ -59,10 +59,6 @@ impl PluginRef {
         symbol: &str,
         param: impl ParamListTo<SType>,
     ) -> Result<Output, BugiError> {
-        let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
-
-        let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-
         let univw = self.univ_ref.clone();
         let env_plox = EnvPloxy::new(
             None,
@@ -74,9 +70,7 @@ impl PluginRef {
             }),
             self.id,
         );
-
-        let result = plug.call_raw(symbol, &param, SType::get_abi_id(), env_plox)?;
-        Ok(Output::from_byte(&result)?)
+        self.call_with_ploxy(symbol, param, env_plox)
     }
 
     /// Call with Cacher
@@ -86,10 +80,6 @@ impl PluginRef {
         param: impl ParamListTo<SType>,
         cacher: &bugi_core::Cacher,
     ) -> Result<Output, BugiError> {
-        let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
-
-        let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
-
         let univw = self.univ_ref.clone();
         let env_plox = EnvPloxy::new(
             Some(cacher),
@@ -101,8 +91,20 @@ impl PluginRef {
             }),
             self.id,
         );
+        self.call_with_ploxy(symbol, param, env_plox)
+    }
 
-        let result = plug.call_raw(symbol, &param, SType::get_abi_id(), env_plox)?;
+    pub(crate) fn call_with_ploxy<SType: SerializeTag, Output: FromByte<SType>>(
+        &self,
+        symbol: &str,
+        param: impl ParamListTo<SType>,
+        ploxy: EnvPloxy,
+    ) -> Result<Output, BugiError> {
+        let plug = self.pref.upgrade().ok_or(BugiError::PluginDropped)?;
+
+        let param = param.to_byte().map_err(BugiError::CannotSerialize)?;
+
+        let result = plug.call_raw(symbol, &param, SType::get_abi_id(), ploxy)?;
 
         Ok(Output::from_byte(&result)?)
     }
