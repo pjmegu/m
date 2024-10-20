@@ -11,7 +11,7 @@ pub struct WasmPlugin {
     module: wasmtime::Module,
 }
 
-fn parse_custom_section(bin: &[u8]) -> HashMap<String, Vec<u8>>{
+fn parse_custom_section(bin: &[u8]) -> HashMap<String, Vec<u8>> {
     let parser = wasmparser::Parser::new(0);
     let parsed_data = parser.parse_all(bin);
     let mut res = HashMap::new();
@@ -56,24 +56,24 @@ impl bugi_core::PluginSystem for WasmPlugin {
         ploxy: bugi_core::EnvPloxy,
     ) -> Result<Vec<u8>, bugi_core::BugiError> {
         const STORE_KEY: &str = "WasmPlugin-Store";
-        
+
         let engine = ENGINE.clone();
 
         let mut store = match ploxy.get_global(STORE_KEY) {
-            Some(store) => {
-                store.downcast().unwrap()
-            },
-            None => {
-                Box::new(wasmtime::Store::new(&engine, ()))
-            }
+            Some(store) => store.downcast().unwrap(),
+            None => Box::new(wasmtime::Store::new(&engine, ())),
         };
 
         let linker = wasmtime::Linker::new(&engine);
-        let ins = linker.instantiate(&mut *store, &self.module).map_err(|err| {
-            bugi_core::BugiError::PluginCallError(format!("Failed to wasm instantiate: {:?}", err))
-        })?;
+        let ins = linker
+            .instantiate(&mut *store, &self.module)
+            .map_err(|err| {
+                bugi_core::BugiError::PluginCallError(format!(
+                    "Failed to wasm instantiate: {:?}",
+                    err
+                ))
+            })?;
 
-        
         ploxy.set_global(STORE_KEY, store);
 
         todo!()
