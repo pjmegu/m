@@ -60,13 +60,18 @@ impl PluginRef {
         param: impl ParamListTo<SType>,
     ) -> Result<Output, BugiError> {
         let univw = self.univ_ref.clone();
+        let id = self.id;
         let env_plox = EnvPloxy::new(
             None,
             Box::new(move |str, symbol, arg, abi, ploxy| {
                 let univ = univw
                     .upgrade()
                     .ok_or_else(|| BugiError::PluginUniverseDropped)?;
-                univ.call_raw(str, symbol, arg, abi, ploxy)
+                if str == "self" {
+                    univ.call_raw_id(id, symbol, arg, abi, ploxy)
+                } else {
+                    univ.call_raw(str, symbol, arg, abi, ploxy)
+                }
             }),
             self.id,
         );
@@ -81,13 +86,18 @@ impl PluginRef {
         cacher: &bugi_core::Cacher,
     ) -> Result<Output, BugiError> {
         let univw = self.univ_ref.clone();
+        let id = self.id;
         let env_plox = EnvPloxy::new(
             Some(cacher),
             Box::new(move |str, symbol, arg, abi, ploxy| {
                 let univ = univw
                     .upgrade()
                     .ok_or_else(|| BugiError::PluginUniverseDropped)?;
-                univ.call_raw(str, symbol, arg, abi, ploxy)
+                if str == "self" {
+                    univ.call_raw_id(id, symbol, arg, abi, ploxy)
+                } else {
+                    univ.call_raw(str, symbol, arg, abi, ploxy)
+                }
             }),
             self.id,
         );

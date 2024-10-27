@@ -131,7 +131,7 @@ impl EnvPloxy {
         }
     }
 
-    pub fn call_univ(
+    pub fn call_univ_raw(
         &self,
         str: &str,
         symbol: &str,
@@ -139,6 +139,20 @@ impl EnvPloxy {
         abi: u8,
     ) -> Result<Vec<u8>, BugiError> {
         (self.0.call_univ)(str, symbol, arg, abi, EnvPloxy(self.0.clone()))
+    }
+
+    pub fn call_univ<S: SerializeTag, Output: FromByte<S>>(
+        &self,
+        str: &str,
+        symbol: &str,
+        args: impl ParamListTo<S>,
+    ) -> Result<Output, BugiError> {
+        Ok(Output::from_byte(&self.call_univ_raw(
+            str,
+            symbol,
+            &args.to_byte()?,
+            S::get_abi_id(),
+        )?)?)
     }
 
     pub fn get_global(&self, str: &str) -> Option<CacheData> {

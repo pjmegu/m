@@ -106,6 +106,19 @@ impl Universe {
         let plugin = inner.plugins.get(id).unwrap();
         plugin.call_raw(symbol, arg, abi, ploxy)
     }
+
+    pub(crate) fn call_raw_id(
+        &self,
+        id: PluginId,
+        symbol: &str,
+        arg: &[u8],
+        abi: u8,
+        ploxy: EnvPloxy,
+    ) -> Result<Vec<u8>, BugiError> {
+        let inner = self.0.read().unwrap();
+        let plugin = inner.plugins.get(&id).unwrap();
+        plugin.call_raw(symbol, arg, abi, ploxy)
+    }
 }
 
 impl Default for Universe {

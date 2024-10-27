@@ -49,6 +49,7 @@ impl Overrider {
     ) -> Result<Output, BugiError> {
         let univw = pref.univ_ref.clone();
         let s = self.clone();
+        let id = pref.id;
         let ploxy = EnvPloxy::new(
             cacher,
             Box::new(move |str, symbol, arg, abi, ploxy| {
@@ -67,7 +68,12 @@ impl Overrider {
                 let univ = univw
                     .upgrade()
                     .ok_or_else(|| BugiError::PluginUniverseDropped)?;
-                univ.call_raw(str, symbol, arg, abi, ploxy)
+
+                if str == "self" {
+                    univ.call_raw_id(id, symbol, arg, abi, ploxy)
+                } else {
+                    univ.call_raw(str, symbol, arg, abi, ploxy)
+                }
             }),
             pref.id,
         );
@@ -81,7 +87,7 @@ impl Overrider {
         sym: &str,
         param: impl ParamListTo<SType>,
     ) -> Result<Output, BugiError> {
-        self.wrap_call_inner(pref, sym, param, None)
+        self.wrap_call_inner::<SType, Output>(pref, sym, param, None)
     }
 
     pub fn wrap_call_cache<SType: SerializeTag, Output: FromByte<SType>>(
