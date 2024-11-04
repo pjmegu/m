@@ -8,7 +8,7 @@ pub(crate) type HostPluginFuncRaw =
 
 #[derive(Default)]
 pub struct HostPlugin {
-    funcs: HashMap<String, (u8, HostPluginFuncRaw)>,
+    funcs: HashMap<String, (u64, HostPluginFuncRaw)>,
 }
 
 impl HostPlugin {
@@ -40,7 +40,7 @@ impl PluginSystem for HostPlugin {
         &self,
         symbol: &str,
         param: &[u8],
-        abi: u8,
+        abi: u64,
         ploxy: EnvPloxy,
     ) -> Result<Vec<u8>, BugiError> {
         let func = self

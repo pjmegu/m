@@ -29,7 +29,7 @@ impl Plugin {
         &self,
         symbol: &str,
         arg: &[u8],
-        abi: u8,
+        abi: u64,
         ploxy: EnvPloxy,
     ) -> Result<Vec<u8>, BugiError> {
         self.detail.raw_call(symbol, arg, abi, ploxy)

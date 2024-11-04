@@ -95,7 +95,7 @@ impl Universe {
         str_id: &str,
         symbol: &str,
         arg: &[u8],
-        abi: u8,
+        abi: u64,
         ploxy: EnvPloxy,
     ) -> Result<Vec<u8>, BugiError> {
         let inner = self.0.read().unwrap();
@@ -112,7 +112,7 @@ impl Universe {
         id: PluginId,
         symbol: &str,
         arg: &[u8],
-        abi: u8,
+        abi: u64,
         ploxy: EnvPloxy,
     ) -> Result<Vec<u8>, BugiError> {
         let inner = self.0.read().unwrap();

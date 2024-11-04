@@ -1,22 +1,25 @@
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
 use bugi_core::{BugiError, EnvPloxy, FromByte, ParamListFrom, ParamListTo, SerializeTag, ToByte};
 
 use crate::plugin::PluginRef;
 
 #[derive(Default, Clone)]
-pub struct Overrider(Rc<RefCell<OverriderInner>>);
+pub struct Overrider(Arc<RwLock<OverriderInner>>);
 
-type OverrideFn = Box<dyn Fn(&[u8]) -> Result<Vec<u8>, BugiError> + 'static>;
+type OverrideFn = Box<dyn Fn(&[u8]) -> Result<Vec<u8>, BugiError> + 'static + Send + Sync>;
 
 #[derive(Default)]
 pub struct OverriderInner {
-    funcs: HashMap<(String, String), (u8, OverrideFn)>,
+    funcs: HashMap<(String, String), (u64, OverrideFn)>,
 }
 
 impl Overrider {
     pub fn new() -> Self {
-        Self(Rc::new(RefCell::new(OverriderInner {
+        Self(Arc::new(RwLock::new(OverriderInner {
             funcs: HashMap::new(),
         })))
     }
@@ -25,9 +28,9 @@ impl Overrider {
         &mut self,
         str_id: &str,
         symbol: &str,
-        func: impl Fn(Param) -> Result + 'static,
+        func: impl Fn(Param) -> Result + 'static + Send + Sync,
     ) {
-        self.0.borrow_mut().funcs.insert(
+        self.0.write().unwrap().funcs.insert(
             (str_id.to_string(), symbol.to_string()),
             (
                 SType::get_abi_id(),
@@ -54,7 +57,8 @@ impl Overrider {
             cacher,
             Box::new(move |str, symbol, arg, abi, ploxy| {
                 if let Some(data) =
-                    s.0.borrow()
+                    s.0.read()
+                        .unwrap()
                         .funcs
                         .get(&(str.to_string(), symbol.to_string()))
                 {
