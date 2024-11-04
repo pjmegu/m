@@ -12,7 +12,7 @@ Additionally, it describes embedding metadata using custom sections.
 ## Plugin Exports
 ### Must
 #### `bugi@v0_plugin_id`: Custom Section Data
-Serialized plugin information using MessagePack is embedded here.
+plugin id using UTF-8 is embedded here.
 
 #### `bugi@v0_low_malloc(byte_len: i32): (ok: i32, ptr: i32)`: System ABI Function
 Allocates memory for passing arguments.
