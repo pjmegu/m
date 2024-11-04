@@ -6,10 +6,10 @@ use bugi::*;
 #[test]
 fn host_call() -> Result<()> {
     let univ = Universe::new();
-    let mut host = HostPlugin::new();
+    let mut host = HostPlugin::new("host_test");
     host.host_func::<RmpTag, _, _>("test", |(name,): (String,), _| format!("Hello, {}!", name));
 
-    let pref = univ.add_plugin("host_test", host)?;
+    let pref = univ.add_plugin(host)?;
 
     let res = pref.call::<RmpTag, String>("test", ("world".to_string(),))?;
 
@@ -20,10 +20,10 @@ fn host_call() -> Result<()> {
 #[test]
 fn cache_test() -> Result<()> {
     let univ = Universe::new();
-    let mut host = HostPlugin::new();
+    let mut host = HostPlugin::new("host_test");
     host.host_func::<RmpTag, _, _>("test", |(name,): (String,), _| format!("Hello, {}!", name));
 
-    let pref = univ.add_plugin("host_test", host)?;
+    let pref = univ.add_plugin(host)?;
 
     let cacher = Cacher::new();
 
@@ -41,13 +41,13 @@ fn cache_test() -> Result<()> {
 #[test]
 fn override_fn_test() -> Result<()> {
     let univ = Universe::new();
-    let mut host = HostPlugin::new();
+    let mut host = HostPlugin::new("test");
     host.host_func::<RmpTag, _, _>("test", |(a, b): (i32, i32), ploxy| {
         ploxy
             .call_univ::<RmpTag, i32>("test2", "called", (a, b))
             .unwrap()
     });
-    let pref = univ.add_plugin("test", host)?;
+    let pref = univ.add_plugin(host)?;
 
     let mut over = Overrider::new();
     over.add::<RmpTag, _, _>("test2", "called", |(a, b): (i32, i32)| a * b);
@@ -61,7 +61,7 @@ fn override_fn_test() -> Result<()> {
 #[test]
 fn self_call_test() -> Result<()> {
     let univ = Universe::new();
-    let mut host = HostPlugin::new();
+    let mut host = HostPlugin::new("tester");
     host.host_func::<RmpTag, _, _>("test", |(a, b): (i32, i32), ploxy| {
         ploxy
             .call_univ::<RmpTag, i32>("self", "called", (a, b))
@@ -70,7 +70,7 @@ fn self_call_test() -> Result<()> {
 
     host.host_func::<RmpTag, _, _>("called", |(a, b): (i32, i32), _| a * b);
 
-    let pref = univ.add_plugin("tester", host)?;
+    let pref = univ.add_plugin(host)?;
     let res = pref.call::<RmpTag, i32>("test", (5, 10))?;
 
     assert_eq!(res, 50);

@@ -10,6 +10,7 @@ use std::{
 pub use bugi_share::*;
 
 pub trait PluginSystem: Send + Sync {
+    fn str_id(&self) -> String;
     /// call a plugin function
     /// if cache is unit value, it means no cache
     fn raw_call(

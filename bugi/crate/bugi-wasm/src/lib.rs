@@ -11,6 +11,7 @@ static ENGINE: LazyLock<wasmtime::Engine> = LazyLock::new(|| {
 });
 
 pub struct WasmPlugin {
+    name: String,
     section: HashMap<String, Vec<u8>>,
     module: wasmtime::Module,
 }
@@ -36,22 +37,33 @@ fn parse_custom_section(bin: &[u8]) -> HashMap<String, Vec<u8>> {
 }
 
 impl WasmPlugin {
-    pub fn load(path: impl AsRef<std::path::Path>) -> anyhow::Result<Self> {
+    pub fn load(name: &str, path: impl AsRef<std::path::Path>) -> anyhow::Result<Self> {
         let engine = ENGINE.clone();
         let section = parse_custom_section(&std::fs::read(path.as_ref())?);
         let module = wasmtime::Module::from_file(&engine, path)?;
-        Ok(Self { module, section })
+        Ok(Self {
+            module,
+            section,
+            name: name.to_string(),
+        })
     }
 
-    pub fn load_bin(bin: &[u8]) -> anyhow::Result<Self> {
+    pub fn load_bin(name: &str, bin: &[u8]) -> anyhow::Result<Self> {
         let engine = ENGINE.clone();
         let section = parse_custom_section(bin);
         let module = wasmtime::Module::new(&engine, bin)?;
-        Ok(Self { module, section })
+        Ok(Self {
+            module,
+            section,
+            name: name.to_string(),
+        })
     }
 }
 
 impl bugi_core::PluginSystem for WasmPlugin {
+    fn str_id(&self) -> String {
+        self.name.clone()
+    }
     fn raw_call(
         &self,
         symbol: &str,

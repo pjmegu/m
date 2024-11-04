@@ -7,22 +7,20 @@ use crate::UniverseWeak;
 
 /// plugin (original)
 pub struct Plugin {
-    str_id: String,
     detail: Box<dyn PluginSystem>,
 }
 
 impl Plugin {
     /// Create a new Host Plugin
-    pub fn new(str_id: &str, detail: impl PluginSystem + 'static) -> Self {
+    pub fn new(detail: impl PluginSystem + 'static) -> Self {
         Self {
-            str_id: str_id.to_string(),
             detail: Box::new(detail),
         }
     }
 
     /// Get the string ID of the plugin
-    pub fn get_str_id(&self) -> &str {
-        &self.str_id
+    pub fn get_str_id(&self) -> String {
+        self.detail.str_id()
     }
 
     pub(crate) fn call_raw(

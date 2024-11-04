@@ -62,7 +62,7 @@ impl Universe {
         // TODO: This is O(n) and can be optimized to use a HashSet
         // Modify this if performance becomes an issue
         for (s, _) in inner.str_ids.iter() {
-            if s == plugin.get_str_id() {
+            if *s == plugin.get_str_id() {
                 return Err(BugiError::PluginIdExists(plugin.get_str_id().to_string()));
             }
         }
@@ -73,7 +73,7 @@ impl Universe {
         let plugin = Arc::new(plugin);
 
         inner.plugins.insert(id, Arc::clone(&plugin));
-        inner.str_ids.insert(plugin.get_str_id().to_string(), id);
+        inner.str_ids.insert(plugin.get_str_id(), id);
         Ok(PluginRef::new(
             Arc::downgrade(&plugin),
             id,
@@ -84,10 +84,9 @@ impl Universe {
     /// add plugin with PluginSystem
     pub fn add_plugin(
         &self,
-        str_id: &str,
         detail: impl bugi_core::PluginSystem + 'static,
     ) -> Result<PluginRef, BugiError> {
-        self.add_plugin_raw(Plugin::new(str_id, detail))
+        self.add_plugin_raw(Plugin::new(detail))
     }
 
     pub(crate) fn call_raw(

@@ -8,12 +8,16 @@ pub(crate) type HostPluginFuncRaw =
 
 #[derive(Default)]
 pub struct HostPlugin {
+    name: String,
     funcs: HashMap<String, (u64, HostPluginFuncRaw)>,
 }
 
 impl HostPlugin {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            ..Default::default()
+        }
     }
 
     pub fn host_func<SType: SerializeTag, Param: ParamListFrom<SType>, Result: ToByte<SType>>(
@@ -36,6 +40,9 @@ impl HostPlugin {
 }
 
 impl PluginSystem for HostPlugin {
+    fn str_id(&self) -> String {
+        self.name.clone()
+    }
     fn raw_call(
         &self,
         symbol: &str,
