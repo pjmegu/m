@@ -216,7 +216,7 @@ impl bugi_core::PluginSystem for WasmPlugin {
                 ))
             })?;
 
-        let func: wasmtime::TypedFunc<(u32, u32), (i32, u32, u32)> = ins
+        let func = ins
             .get_typed_func::<(u32, u32), (i32, u32, u32)>(&mut *store, symbol)
             .map_err(|err| {
                 bugi_core::BugiError::PluginCallError(format!(
