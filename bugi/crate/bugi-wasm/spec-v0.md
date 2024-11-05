@@ -50,7 +50,7 @@ Calls the plugin function.
 
 ## Plugin Imports
 
-### `bugi@v0` `call_univ(arg_ptr: i32, arg_len: i32): (ok: i32, result_ptr: i32, result_len: i32)`: Serialization ABI Function
+### `bugi@v0` `call_univ(arg_ptr: i32, arg_len: i32): (result_ptr: i32, result_len: i32)`: Serialization ABI Function
 #### ARG Type
 ```jsonc
 {

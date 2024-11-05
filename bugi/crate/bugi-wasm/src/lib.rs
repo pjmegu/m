@@ -2,7 +2,7 @@ use core::panic;
 use std::{collections::HashMap, sync::LazyLock};
 
 use rmpv::ValueRef;
-use wasmtime::Caller;
+use wasmtime::{Caller, Store};
 
 static ENGINE: LazyLock<wasmtime::Engine> = LazyLock::new(|| {
     let mut config = wasmtime::Config::new();
@@ -101,8 +101,7 @@ impl bugi_core::PluginSystem for WasmPlugin {
                     let result = memory.read(&caller, arg_ptr as usize, &mut arg);
                     if let Err(err) = result {
                         let err = format!("Can't Read Memory: \n{}", err);
-                        println!("<Bugi-Wasm> Found Error: {}", &err);
-                        return (1, 0, 0);
+                        panic!("<Bugi-Wasm> Found Error: {}", &err);
                     }
 
                     let result = free.call(&mut caller, (arg_ptr, arg_len));
@@ -184,17 +183,26 @@ impl bugi_core::PluginSystem for WasmPlugin {
 
                     let result = ploxy_c.call_univ_raw(&arg.id, &arg.name, &arg.detail, arg.abi);
 
-                    let res = if let Err(err) = result {
-                        panic!("<Bugi-Wasm> Call-Univ-Error: emit error during running function({}:{}) \n{}", &arg.id, &arg.name, err);
-                    } else {
-                            result.unwrap()
+                    let res = match result {
+                        Ok(v) => v,
+                        Err(err) => panic!("<Bugi-Wasm> Call-Univ-Error: emit error during running function({}:{}) \n{}", &arg.id, &arg.name, err)
                     };
 
+                    let mem = malloc.call(&mut caller, (res.len() as u32,));
 
+                    let mem_ptr = match mem {
+                        Ok((ok, ptr)) => if ok == 0 { ptr } else {
+                            panic!("<Bugi-Wasm> Can't Alloc Memory(Wasm side)")
+                        },
+                        Err(err) => panic!("<Bugi-Wasm> Can't Alloc Memory: {}", err)
+                    };
 
+                    let result = memory.write(&mut caller, mem_ptr as usize, &res);
+                    if let Err(err) = result {
+                        panic!("<Bugi-Wasm> Can't Write Memory: {}", err)
+                    }
 
-
-                    (0, 0, 0)
+                    (mem_ptr as u32, res.len() as u32)
                 },
             )
             .unwrap();
@@ -205,6 +213,15 @@ impl bugi_core::PluginSystem for WasmPlugin {
                 bugi_core::BugiError::PluginCallError(format!(
                     "Failed to wasm instantiate: {:?}",
                     err
+                ))
+            })?;
+
+        let func: wasmtime::TypedFunc<(u32, u32), (i32, u32, u32)> = ins
+            .get_typed_func::<(u32, u32), (i32, u32, u32)>(&mut *store, symbol)
+            .map_err(|err| {
+                bugi_core::BugiError::PluginCallError(format!(
+                    "Symbol is not found({}): {}",
+                    symbol, err
                 ))
             })?;
 
