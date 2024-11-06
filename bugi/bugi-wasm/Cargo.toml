@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wasmtime = "25.0.2"
+wasmtime = "26.0.1"
 wasmparser = "0.219.1"
 thiserror.workspace = true
 anyhow.workspace = true
