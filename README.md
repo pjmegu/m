@@ -4,6 +4,8 @@
    <a href="https://github.com/pjmegu/m">
       <img alt="project megu logo" src="docs/logo/megu.png">
    </a>
+</p>
+<p align="center">
    <img alt="GitHub Created At" src="https://img.shields.io/github/created-at/pjmegu/m">
    <img alt="GitHub License" src="https://img.shields.io/github/license/pjmegu/m">
    <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/pjmegu/m">
@@ -33,6 +35,6 @@
 │  └─ High Level IR System written by noda
 ├─ noda
 │  └─ Yet Another MLIR Implment for programing language
-└─ bugi 
+└─ bugi
    └─ Plugin system for noda
 ```
