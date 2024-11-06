@@ -17,7 +17,7 @@ pub enum SerializeError {
 }
 
 pub trait SerializeTag {
-    fn get_abi_id() -> u8;
+    fn get_abi_id() -> u64;
 }
 
 #[cfg(feature = "ser-rmp")]
@@ -25,7 +25,7 @@ pub struct RmpTag;
 
 #[cfg(feature = "ser-rmp")]
 impl SerializeTag for RmpTag {
-    fn get_abi_id() -> u8 {
+    fn get_abi_id() -> u64 {
         RMP_ABI_ID
     }
 }
@@ -35,18 +35,18 @@ pub struct BitcodeTag;
 
 #[cfg(feature = "ser-bitcode")]
 impl SerializeTag for BitcodeTag {
-    fn get_abi_id() -> u8 {
+    fn get_abi_id() -> u64 {
         BITCODE_ABI_ID
     }
 }
 
-pub const ERROR_ABI_ID: u8 = 0xFF;
+pub const ERROR_ABI_ID: u64 = 0xFF;
 
 #[cfg(feature = "ser-rmp")]
-pub const RMP_ABI_ID: u8 = 0x00;
+pub const RMP_ABI_ID: u64 = 0x00;
 
 #[cfg(feature = "ser-bitcode")]
-pub const BITCODE_ABI_ID: u8 = 0x01;
+pub const BITCODE_ABI_ID: u64 = 0x01;
 
 pub trait ToByte<T: SerializeTag> {
     fn to_byte(&self) -> Result<Vec<u8>, SerializeError>;

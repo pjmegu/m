@@ -21,6 +21,7 @@
           packages = [
             rust.default.toolchain
             rust.targets.wasm32-unknown-unknown.latest.rust-std
+            pkgs.cargo-nextest
           ];
         };
       });

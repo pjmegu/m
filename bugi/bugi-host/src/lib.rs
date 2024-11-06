@@ -1,33 +1,37 @@
 use std::collections::HashMap;
 
-use bugi_core::{BugiError, PluginSystem};
+use bugi_core::{BugiError, EnvPloxy, PluginSystem};
 use bugi_core::{ParamListFrom, SerializeTag, ToByte};
 
 pub(crate) type HostPluginFuncRaw =
-    Box<dyn (Fn(&[u8]) -> Result<Vec<u8>, BugiError>) + Send + Sync>;
+    Box<dyn (Fn(&[u8], EnvPloxy) -> Result<Vec<u8>, BugiError>) + Send + Sync>;
 
 #[derive(Default)]
 pub struct HostPlugin {
-    funcs: HashMap<String, (u8, HostPluginFuncRaw)>,
+    name: String,
+    funcs: HashMap<String, (u64, HostPluginFuncRaw)>,
 }
 
 impl HostPlugin {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            ..Default::default()
+        }
     }
 
     pub fn host_func<SType: SerializeTag, Param: ParamListFrom<SType>, Result: ToByte<SType>>(
         &mut self,
         symbol: &str,
-        func: impl Fn(Param) -> Result + 'static + Send + Sync,
+        func: impl Fn(Param, EnvPloxy) -> Result + 'static + Send + Sync,
     ) {
         self.funcs.insert(
             symbol.to_string(),
             (
                 SType::get_abi_id(),
-                Box::new(move |arg| {
+                Box::new(move |arg, ploxy| {
                     let arg = Param::from_byte(arg).map_err(BugiError::CannotSerialize)?;
-                    let result = func(arg);
+                    let result = func(arg, ploxy);
                     result.to_byte().map_err(BugiError::CannotSerialize)
                 }),
             ),
@@ -36,7 +40,16 @@ impl HostPlugin {
 }
 
 impl PluginSystem for HostPlugin {
-    fn raw_call(&self, symbol: &str, param: &[u8], abi: u8) -> Result<Vec<u8>, BugiError> {
+    fn str_id(&self) -> String {
+        self.name.clone()
+    }
+    fn raw_call(
+        &self,
+        symbol: &str,
+        param: &[u8],
+        abi: u64,
+        ploxy: EnvPloxy,
+    ) -> Result<Vec<u8>, BugiError> {
         let func = self
             .funcs
             .get(symbol)
@@ -49,6 +62,9 @@ impl PluginSystem for HostPlugin {
             return Err(BugiError::PluginAbiError(func.0));
         }
 
-        func.1(param)
+        match func.1(param, ploxy) {
+            Ok(result) => Ok(result),
+            Err(e) => Err(e),
+        }
     }
 }
