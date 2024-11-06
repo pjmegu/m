@@ -87,6 +87,7 @@ impl Cacher {
     }
 }
 
+/// Multithread Sharing & Using is not Safety
 #[derive(Clone)]
 pub struct EnvPloxy(Arc<EnvPloxyInner>);
 
@@ -176,6 +177,7 @@ impl EnvPloxy {
     }
 }
 
+/// Multithread Sharing & Using is not Safety
 pub struct CachePloxy {
     pub get_global: Box<dyn (Fn(&str) -> Option<CacheData>) + Send + Sync>,
     pub set_global: Box<dyn (Fn(&str, CacheData)) + Send + Sync>,

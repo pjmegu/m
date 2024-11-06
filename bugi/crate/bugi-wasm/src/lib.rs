@@ -2,7 +2,13 @@ use core::panic;
 use std::{collections::HashMap, sync::LazyLock};
 
 use rmpv::ValueRef;
-use wasmtime::{Caller, Store};
+use wasmtime::Caller;
+
+const SPEC_CALL_UNIV: (&str, &str) = ("bugi@v0", "call_univ");
+const SPEC_PLUGIN_FUNC: &str = "bugi@v0_plugin_function_";
+const SPEC_LOW_MALLOC: &str = "bugi@v0_low_malloc";
+const SPEC_LOW_FREE: &str = "bugi@v0_low_free";
+const SPEC_PLUG_ID: &str = "bugi@v0_plugin_id";
 
 static ENGINE: LazyLock<wasmtime::Engine> = LazyLock::new(|| {
     let mut config = wasmtime::Config::new();
@@ -53,7 +59,7 @@ impl WasmPlugin {
 
 impl bugi_core::PluginSystem for WasmPlugin {
     fn str_id(&self) -> String {
-        String::from_utf8(self.section.get("bugi@v0_plugin_id").unwrap().to_vec()).unwrap()
+        String::from_utf8(self.section.get(SPEC_PLUG_ID).unwrap().to_vec()).unwrap()
     }
 
     fn raw_call(
@@ -76,43 +82,39 @@ impl bugi_core::PluginSystem for WasmPlugin {
         let ploxy_c = ploxy.clone();
         linker
             .func_wrap(
-                "bugi@v0",
-                "call_univ",
+                SPEC_CALL_UNIV.0,
+                SPEC_CALL_UNIV.1,
                 move |mut caller: Caller<'_, ()>, arg_ptr: u32, arg_len: u32| {
                     let malloc = caller
-                        .get_export("bugi@v0_low_malloc")
+                        .get_export(SPEC_LOW_MALLOC)
                         .unwrap()
                         .into_func()
                         .unwrap()
-                        .typed::<(u32,), (u32, u32)>(&caller)
+                        .typed::<(u32,), u32>(&caller)
                         .unwrap();
 
                     let free = caller
-                        .get_export("bugi@v0_low_free")
+                        .get_export(SPEC_LOW_FREE)
                         .unwrap()
                         .into_func()
                         .unwrap()
-                        .typed::<(u32, u32), u32>(&caller)
+                        .typed::<(u32, u32), ()>(&caller)
                         .unwrap();
 
                     let memory = caller.get_export("memory").unwrap().into_memory().unwrap();
 
                     let mut arg = vec![0; arg_len as usize];
-                    let result = memory.read(&caller, arg_ptr as usize, &mut arg);
-                    if let Err(err) = result {
+                    if let Err(err) = memory.read(&caller, arg_ptr as usize, &mut arg) {
                         let err = format!("Can't Read Memory: \n{}", err);
                         panic!("<Bugi-Wasm> Found Error: {}", &err);
                     }
 
-                    let result = free.call(&mut caller, (arg_ptr, arg_len));
-
-                    if let Err(err) = result {
+                    if let Err(err) = free.call(&mut caller, (arg_ptr, arg_len)) {
                         panic!("<Bugi-Wasm> Can't Dealloc Memory: {}", err);
-                    } else if result.unwrap() != 0 {
-                        panic!("<Bugi-Wasm> Can't Dealloc Memory (Plugin side Error)")
                     }
 
                     let arg = rmpv::decode::read_value_ref(&mut arg.as_slice()).unwrap();
+
                     #[derive(Default)]
                     struct Arg {
                         id: String,
@@ -191,9 +193,7 @@ impl bugi_core::PluginSystem for WasmPlugin {
                     let mem = malloc.call(&mut caller, (res.len() as u32,));
 
                     let mem_ptr = match mem {
-                        Ok((ok, ptr)) => if ok == 0 { ptr } else {
-                            panic!("<Bugi-Wasm> Can't Alloc Memory(Wasm side)")
-                        },
+                        Ok(ptr) => ptr,
                         Err(err) => panic!("<Bugi-Wasm> Can't Alloc Memory: {}", err)
                     };
 
@@ -217,16 +217,74 @@ impl bugi_core::PluginSystem for WasmPlugin {
             })?;
 
         let func = ins
-            .get_typed_func::<(u32, u32), (i32, u32, u32)>(&mut *store, symbol)
+            .get_typed_func::<(u32, u32, u64), (u32, u32)>(
+                &mut *store,
+                &format!("{}{}", SPEC_PLUGIN_FUNC, symbol),
+            )
             .map_err(|err| {
                 bugi_core::BugiError::PluginCallError(format!(
-                    "Symbol is not found({}): {}",
+                    "Symbol get error({}): {}",
                     symbol, err
                 ))
             })?;
 
+        let malloc = ins
+            .get_typed_func::<(u32,), u32>(&mut *store, SPEC_LOW_MALLOC)
+            .map_err(|err| {
+                bugi_core::BugiError::PluginCallError(
+                    format!("{SPEC_LOW_MALLOC} get error: {err}",),
+                )
+            })?;
+
+        let free = ins
+            .get_typed_func::<(u32, u32), ()>(&mut *store, SPEC_LOW_FREE)
+            .map_err(|err| {
+                bugi_core::BugiError::PluginCallError(format!("{SPEC_LOW_FREE} get error: {err}"))
+            })?;
+
+        let memory = ins.get_memory(&mut *store, "memory").ok_or_else(|| {
+            bugi_core::BugiError::PluginCallError(
+                "memory get error: `memory` is not exported".to_string(),
+            )
+        })?;
+
+        let mem_ptr = malloc
+            .call(&mut *store, (param.len() as u32,))
+            .map_err(|err| {
+                bugi_core::BugiError::PluginCallError(format!(
+                    "can't alloc memory in `{SPEC_LOW_MALLOC}`: {err}"
+                ))
+            })?;
+
+        if let Err(err) = memory.write(&mut *store, mem_ptr as usize, param) {
+            return Err(bugi_core::BugiError::PluginCallError(format!(
+                "can't write memory: {err}"
+            )));
+        }
+
+        let (res_ptr, res_len) = func
+            .call(&mut *store, (mem_ptr, param.len() as u32, abi))
+            .map_err(|err| {
+                bugi_core::BugiError::PluginCallError(format!(
+                    "emit error during running `{symbol}`: {err}"
+                ))
+            })?;
+
+        let mut res = vec![0; res_len as usize];
+        if let Err(err) = memory.read(&mut *store, res_ptr as usize, &mut res) {
+            return Err(bugi_core::BugiError::PluginCallError(format!(
+                "can't read memory: {err}"
+            )));
+        }
+
+        if let Err(err) = free.call(&mut *store, (res_ptr, res_len)) {
+            return Err(bugi_core::BugiError::PluginCallError(format!(
+                "can't dealloc memory: {err}"
+            )));
+        }
+
         ploxy.set_global(STORE_KEY, store);
 
-        todo!()
+        Ok(res)
     }
 }
