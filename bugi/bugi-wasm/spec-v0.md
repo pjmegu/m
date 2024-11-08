@@ -18,8 +18,6 @@ plugin id using UTF-8 is embedded here.
 Allocates memory for passing arguments.
 `byte_len`: The length in bytes to allocate memory
 
-`ok`: 0 indicates success, otherwise it indicates an error occurred during memory allocation
-
 `ptr`: Memory pointer. Use it only after confirming `ok` is 0
 
 #### `bugi@v0_low_free(byte_ptr: i32, byte_len: i32): void`: System ABI Function
@@ -28,8 +26,6 @@ Memory is freed.
 `byte_ptr`: Pointer to the start of the memory to be freed
 
 `byte_len`: Length of the memory
-
-`ok`: 0 indicates success, otherwise it indicates an error occurred
 
 ### Plugin Functions
 
@@ -42,7 +38,7 @@ Calls the plugin function.
 
 `abi`: Serialization type of the argument data. An error occurs if it does not match the actual ABI.
 
-`result_ptr`: Pointer to the return value. If `ok` is non-zero, the data serialized in Messagepack is placed. After reading, the memory must be freed.
+`result_ptr`: Pointer to the return value. After reading, the memory must be freed.
 
 `result_len`: Byte length of the return value.
 

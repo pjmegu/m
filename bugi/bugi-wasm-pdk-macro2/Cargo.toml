@@ -1,0 +1,10 @@
+[package]
+name = "bugi-wasm-pdk-macro2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+proc-macro2.workspace = true
+syn.workspace = true
+quote.workspace = true
+
