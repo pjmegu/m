@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "bugi/*", # bugi main
-    "bugi/bugi-tests/wasm-plug", # bugi test(wasm)
+    "bugi/bugi-tests/wasm-plug", "xtask", # bugi test(wasm)
 ]
 resolver = "2"
 
