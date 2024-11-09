@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 bugi-share = { path = "../bugi-share", features = [ "ser-rmp" ] }
 bugi-wasm-pdk-macro.path = "../bugi-wasm-pdk-macro"
+rmpv.workspace = true
 
