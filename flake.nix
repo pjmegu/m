@@ -19,8 +19,12 @@
       in {
         devShells.default = pkgs.mkShell {
           packages = [
-            rust.default.toolchain
-            rust.targets.wasm32-unknown-unknown.latest.rust-std
+            # rust.default.toolchain
+            # rust.targets.wasm32-unknown-unknown.latest.rust-std
+            (rust.combine [
+              rust.default.toolchain
+              rust.targets.wasm32-unknown-unknown.latest.toolchain
+            ])
             pkgs.cargo-nextest
           ];
         };

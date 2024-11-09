@@ -1,5 +1,8 @@
 [workspace]
-members = ["bugi/*"]
+members = [
+    "bugi/*", # bugi main
+    "bugi/bugi-tests/wasm-plug", # bugi test(wasm)
+]
 resolver = "2"
 
 [workspace.dependencies]
