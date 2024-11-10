@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bugi = { path = "../bugi", features = ["ser-bitcode"] }
+bugi = { path = "../bugi", features = ["ser-bitcode", "plug-wasm"] }
 anyhow.workspace = true

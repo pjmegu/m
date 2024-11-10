@@ -58,15 +58,17 @@ fn exists(path: &str) -> bool {
 fn bugi_wasm_test_build() {
     out(Command::new("cargo")
         .arg("build")
+        .arg("-r")
         .args(["-p", "wasm-plug"])
         .args(["--target", "wasm32-unknown-unknown"])
         .args(["-Z", "unstable-options"])
         .args(["--artifact-dir", "./.test"])
+        .env("RUSTFLAGS", "-Ctarget-feature=+multivalue")
         .output()
         .unwrap());
 
     std::fs::copy(
-        "./.test/wasm-plug.wasm",
+        "./.test/wasm_plug.wasm",
         "./bugi/bugi-tests/wasm-plug.test.wasm",
     )
     .unwrap();

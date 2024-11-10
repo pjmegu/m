@@ -1,5 +1,3 @@
-#![no_main]
-
 use bugi_wasm_pdk::{export, plugin_id};
 
 plugin_id!("wasm-test-plug");

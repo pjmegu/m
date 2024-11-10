@@ -29,7 +29,7 @@ Memory is freed.
 
 ### Plugin Functions
 
-#### `bugi@v0_plugin_function_<name>(arg_ptr: i32, arg_len: i32, abi: i64): (result_ptr: i32, result_len: i32)`: Serialization ABI Function
+#### `bugi@v0_plugin_function_<name>(arg_ptr: i32, arg_len: i32, abi: i64): i64(high=result_ptr: i32, low=result_len: i32)`: Serialization ABI Function
 Calls the plugin function.
 
 `arg_ptr`: Pointer to the serialized argument data. It must be allocated by `bugi@v0_low_malloc`. After reading, the memory is automatically discarded.
@@ -44,7 +44,7 @@ Calls the plugin function.
 
 ## Plugin Imports
 
-### `bugi@v0` `call_univ(arg_ptr: i32, arg_len: i32): (result_ptr: i32, result_len: i32)`: Serialization ABI Function
+### `bugi@v0` `call_univ(arg_ptr: i32, arg_len: i32): i64(high=result_ptr: i32, low=result_len: i32)`: Serialization ABI Function
 #### ARG Type
 ```jsonc
 {

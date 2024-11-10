@@ -37,6 +37,7 @@ pub fn export_macro(attr: TokenStream, item: TokenStream) -> TokenStream {
     let fn_name = fn_item.sig.ident;
     let arg_get_token = if arg_types.is_empty() {
         quote! {
+            ::bugi_wasm_pdk::dealloc(arg_ptr, arg_len);
             let res = #fn_name();
         }
     } else {
@@ -46,13 +47,21 @@ pub fn export_macro(attr: TokenStream, item: TokenStream) -> TokenStream {
             type ArgTuple = (#(#arg_types),*,);
             let arg: ArgTuple = <ArgTuple as FromByte<#abi_type>>::from_byte(arg).unwrap();
             let res = #fn_name(#(arg.#i),*);
+            ::bugi_wasm_pdk::dealloc(arg_ptr, arg_len);
         }
     };
 
     let return_token = match fn_item.sig.output {
         ReturnType::Default => {
             quote! {
-                (0, 0)
+            type ReturnType = ();
+            let res = <ReturnType as ToByte<#abi_type>>::to_byte(()).unwrap();
+            let ptr = ::bugi_wasm_pdk::alloc(res.len() as u32) as u64;
+            unsafe {
+                std::ptr::copy_nonoverlapping(res.as_ptr(), ptr as *mut _, res.len());
+            }
+
+            (ptr << 32) | res.len() as u64
             }
         }
 
@@ -62,12 +71,12 @@ pub fn export_macro(attr: TokenStream, item: TokenStream) -> TokenStream {
 
             type ReturnType = #return_type;
             let res = <ReturnType as ToByte<#abi_type>>::to_byte(&res).unwrap();
-            let ptr = ::bugi_wasm_pdk::alloc(res.len() as u32);
+            let ptr = ::bugi_wasm_pdk::alloc(res.len() as u32) as u64;
             unsafe {
                 std::ptr::copy_nonoverlapping(res.as_ptr(), ptr as *mut _, res.len());
             }
 
-            (ptr, res.len() as u32)
+            (ptr << 32) | res.len() as u64
             }
         }
     };
@@ -77,7 +86,7 @@ pub fn export_macro(attr: TokenStream, item: TokenStream) -> TokenStream {
     let token = quote! {
     #[no_mangle]
     #[export_name = #fn_name_export]
-    extern "C" fn #fn_name_ident(arg_ptr: u32, arg_len: u32, abi_type: u64) -> (u32, u32) {
+    extern "C" fn #fn_name_ident(arg_ptr: u32, arg_len: u32, abi_type: u64) -> u64 {
         use ::bugi_wasm_pdk::macro_prelude::*;
         if <#abi_type as SerializeTag>::get_abi_id() != abi_type {
                 panic!("ABI Type(id: {}) is not match this function(id: {})", abi_type, <#abi_type as SerializeTag>::get_abi_id());
