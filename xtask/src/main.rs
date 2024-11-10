@@ -7,7 +7,10 @@ use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 enum Cli {
-    Test,
+    Test {
+        #[arg(short, long)]
+        force: bool,
+    },
     #[command(subcommand)]
     Bugi(BugiCmd),
 }
@@ -24,8 +27,8 @@ fn main() {
 
     let cmd = Cli::parse();
     match cmd {
-        Cli::Test => {
-            if !exists("./bugi/bugi-tests/wasm-plug.test.wasm") {
+        Cli::Test { force } => {
+            if !exists("./bugi/bugi-tests/wasm-plug.test.wasm") || force {
                 bugi_wasm_test_build();
             }
 
