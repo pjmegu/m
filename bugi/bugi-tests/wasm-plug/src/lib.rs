@@ -1,4 +1,4 @@
-use bugi_wasm_pdk::{export, plugin_id};
+use bugi_wasm_pdk::{call, export, macro_prelude::RmpTag, plugin_id};
 
 plugin_id!("wasm-test-plug");
 
@@ -15,4 +15,10 @@ fn one_zero(_str: String) {
 #[export("zero_one", RmpTag)]
 fn zero_one() -> String {
     "TEST".to_string()
+}
+
+#[export("call_univ_test", RmpTag)]
+fn cuniv() -> String {
+    let res = call::<RmpTag, _>("host", "get_string", ());
+    res
 }

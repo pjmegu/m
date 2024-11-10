@@ -15,7 +15,7 @@ pub mod macro_prelude {
 #[link(wasm_import_module = "bugi@v0")]
 #[allow(improper_ctypes)]
 extern "C" {
-    fn call_univ(arg_ptr: u32, arg_len: u32) -> (u32, u32);
+    fn call_univ(arg_ptr: u32, arg_len: u32) -> u64;
 }
 
 pub fn call<SType: SerializeTag, Output: FromByte<SType>>(
@@ -42,7 +42,10 @@ pub fn call<SType: SerializeTag, Output: FromByte<SType>>(
     let arg_ptr = alloc(arg.len() as u32);
     unsafe { std::ptr::copy_nonoverlapping(arg.as_ptr(), arg_ptr as _, arg.len()) }
 
-    let (res_ptr, res_len) = unsafe { call_univ(arg_ptr, arg.len() as u32) };
+    let res = unsafe { call_univ(arg_ptr, arg.len() as u32) };
+
+    let res_ptr = (res >> 32) as u32;
+    let res_len = (res & 0xFFFFFFFF) as u32;
 
     let res: Vec<u8> =
         unsafe { std::slice::from_raw_parts(res_ptr as _, res_len as usize).to_vec() };

@@ -202,7 +202,7 @@ impl bugi_core::PluginSystem for WasmPlugin {
                         panic!("<Bugi-Wasm> Can't Write Memory: {}", err)
                     }
 
-                    (mem_ptr as u32, res.len() as u32)
+                    (mem_ptr as u64) << 32 | res.len() as u64
                 },
             )
             .unwrap();

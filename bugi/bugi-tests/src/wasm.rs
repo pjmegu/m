@@ -1,5 +1,5 @@
 use anyhow::Result;
-use bugi::{RmpTag, Universe, WasmPlugin};
+use bugi::{HostPlugin, RmpTag, Universe, WasmPlugin};
 
 #[test]
 fn wasm_call() -> Result<()> {
@@ -41,6 +41,25 @@ fn wasm_call_0_1() -> Result<()> {
     let pref = univ.add_plugin(wasm)?;
 
     let res = pref.call::<RmpTag, String>("zero_one", ())?;
+
+    assert_eq!(res, "TEST".to_string());
+
+    Ok(())
+}
+
+#[test]
+fn call_univ_test() -> Result<()> {
+    let univ = Universe::new();
+    let mut host = HostPlugin::new("host");
+    host.host_func::<RmpTag, (), _>("get_string", |_, _| "TEST".to_string());
+    let _ = univ.add_plugin(host);
+    let wasm = WasmPlugin::load(format!(
+        "{}/wasm-plug.test.wasm",
+        env!("CARGO_MANIFEST_DIR")
+    ))?;
+    let pref = univ.add_plugin(wasm)?;
+
+    let res = pref.call::<RmpTag, String>("call_univ_test", ())?;
 
     assert_eq!(res, "TEST".to_string());
 
