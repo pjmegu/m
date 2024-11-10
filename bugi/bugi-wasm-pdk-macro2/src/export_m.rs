@@ -55,7 +55,7 @@ pub fn export_macro(attr: TokenStream, item: TokenStream) -> TokenStream {
         ReturnType::Default => {
             quote! {
             type ReturnType = ();
-            let res = <ReturnType as ToByte<#abi_type>>::to_byte(()).unwrap();
+            let res = <ReturnType as ToByte<#abi_type>>::to_byte(&()).unwrap();
             let ptr = ::bugi_wasm_pdk::alloc(res.len() as u32) as u64;
             unsafe {
                 std::ptr::copy_nonoverlapping(res.as_ptr(), ptr as *mut _, res.len());

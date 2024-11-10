@@ -119,6 +119,9 @@ macro_rules! gen_input_param_rmp {
 #[cfg(feature = "ser-rmp")]
 foreach_func_sig!(gen_input_param_rmp);
 
+#[cfg(feature = "ser-rmp")]
+impl ParamListFrom<RmpTag> for () {}
+
 #[cfg(feature = "ser-bitcode")]
 macro_rules! gen_input_param_bitcode {
     ($($type: ident),+) => {
@@ -128,6 +131,9 @@ macro_rules! gen_input_param_bitcode {
 
 #[cfg(feature = "ser-bitcode")]
 foreach_func_sig!(gen_input_param_bitcode);
+
+#[cfg(feature = "ser-bitcode")]
+impl ParamListFrom<BitcodeTag> for () {}
 
 pub trait ParamListTo<S: SerializeTag>: ToByte<S> {}
 
@@ -141,6 +147,9 @@ macro_rules! gen_output_param_rmp {
 #[cfg(feature = "ser-rmp")]
 foreach_func_sig!(gen_output_param_rmp);
 
+#[cfg(feature = "ser-rmp")]
+impl ParamListTo<RmpTag> for () {}
+
 #[cfg(feature = "ser-bitcode")]
 macro_rules! gen_output_param_bitcode {
     ($($type: ident),+) => {
@@ -150,3 +159,6 @@ macro_rules! gen_output_param_bitcode {
 
 #[cfg(feature = "ser-bitcode")]
 foreach_func_sig!(gen_output_param_bitcode);
+
+#[cfg(feature = "ser-bitcode")]
+impl ParamListTo<BitcodeTag> for () {}
