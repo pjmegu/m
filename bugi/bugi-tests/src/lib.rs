@@ -1,5 +1,7 @@
 #![cfg(test)]
 
+mod wasm;
+
 use anyhow::*;
 use bugi::*;
 

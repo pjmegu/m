@@ -1,5 +1,8 @@
 [workspace]
-members = ["bugi/*"]
+members = [
+    "bugi/*", # bugi main
+    "bugi/bugi-tests/wasm-plug", "xtask", # bugi test(wasm)
+]
 resolver = "2"
 
 [workspace.dependencies]
@@ -15,6 +18,6 @@ serde = { version = "1.0.210", features = ["derive"] }
 bitcode = "0.6.3"
 
 # macro
-proc-macro2 = { version = "1.0.87" }
-syn = { version = "2.0.79", features = ["full"] }
-quote = { version = "1.0.37" }
+proc-macro2 = { version = "1.0" }
+syn = { version = "2.0", features = ["full"] }
+quote = { version = "1.0" }

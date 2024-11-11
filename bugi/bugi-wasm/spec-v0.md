@@ -18,8 +18,6 @@ plugin id using UTF-8 is embedded here.
 Allocates memory for passing arguments.
 `byte_len`: The length in bytes to allocate memory
 
-`ok`: 0 indicates success, otherwise it indicates an error occurred during memory allocation
-
 `ptr`: Memory pointer. Use it only after confirming `ok` is 0
 
 #### `bugi@v0_low_free(byte_ptr: i32, byte_len: i32): void`: System ABI Function
@@ -29,11 +27,9 @@ Memory is freed.
 
 `byte_len`: Length of the memory
 
-`ok`: 0 indicates success, otherwise it indicates an error occurred
-
 ### Plugin Functions
 
-#### `bugi@v0_plugin_function_<name>(arg_ptr: i32, arg_len: i32, abi: i64): (result_ptr: i32, result_len: i32)`: Serialization ABI Function
+#### `bugi@v0_plugin_function_<name>(arg_ptr: i32, arg_len: i32, abi: i64): i64(high=result_ptr: i32, low=result_len: i32)`: Serialization ABI Function
 Calls the plugin function.
 
 `arg_ptr`: Pointer to the serialized argument data. It must be allocated by `bugi@v0_low_malloc`. After reading, the memory is automatically discarded.
@@ -42,13 +38,13 @@ Calls the plugin function.
 
 `abi`: Serialization type of the argument data. An error occurs if it does not match the actual ABI.
 
-`result_ptr`: Pointer to the return value. If `ok` is non-zero, the data serialized in Messagepack is placed. After reading, the memory must be freed.
+`result_ptr`: Pointer to the return value. After reading, the memory must be freed.
 
 `result_len`: Byte length of the return value.
 
 ## Plugin Imports
 
-### `bugi@v0` `call_univ(arg_ptr: i32, arg_len: i32): (result_ptr: i32, result_len: i32)`: Serialization ABI Function
+### `bugi@v0` `call_univ(arg_ptr: i32, arg_len: i32): i64(high=result_ptr: i32, low=result_len: i32)`: Serialization ABI Function
 #### ARG Type
 ```jsonc
 {

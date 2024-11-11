@@ -13,14 +13,11 @@ jobs:
       - name: Setup Pages Dir
         run: |
           mkdir pages
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          targets: wasm32-unknown-unknown
-          components: rustfmt, clippy, cargo
+      - name: Setup Nix
+        uses: DeterminateSystems/nix-installer-action@main
       - name: Build Rust Documents
         run: |
-          cargo doc --no-deps --document-private-items --workspace
+          nix develop -c cargo doc --workspace
           mv target/doc pages/rust
       - name: Deploy to GitHub Pages
         uses: actions/upload-pages-artifact@v3

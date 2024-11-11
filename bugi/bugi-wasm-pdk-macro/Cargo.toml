@@ -1,0 +1,12 @@
+[package]
+name = "bugi-wasm-pdk-macro"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+proc-macro2.workspace = true
+bugi-wasm-pdk-macro2.path = "../bugi-wasm-pdk-macro2"
+
+[lib]
+proc-macro = true
+

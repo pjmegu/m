@@ -202,7 +202,7 @@ impl bugi_core::PluginSystem for WasmPlugin {
                         panic!("<Bugi-Wasm> Can't Write Memory: {}", err)
                     }
 
-                    (mem_ptr as u32, res.len() as u32)
+                    (mem_ptr as u64) << 32 | res.len() as u64
                 },
             )
             .unwrap();
@@ -217,7 +217,7 @@ impl bugi_core::PluginSystem for WasmPlugin {
             })?;
 
         let func = ins
-            .get_typed_func::<(u32, u32, u64), (u32, u32)>(
+            .get_typed_func::<(u32, u32, u64), u64>(
                 &mut *store,
                 &format!("{}{}", SPEC_PLUGIN_FUNC, symbol),
             )
@@ -262,13 +262,16 @@ impl bugi_core::PluginSystem for WasmPlugin {
             )));
         }
 
-        let (res_ptr, res_len) = func
+        let res = func
             .call(&mut *store, (mem_ptr, param.len() as u32, abi))
             .map_err(|err| {
                 bugi_core::BugiError::PluginCallError(format!(
                     "emit error during running `{symbol}`: {err}"
                 ))
             })?;
+
+        let res_ptr = (res >> 32) as u32;
+        let res_len = (res & 0xFFFFFFFF) as u32;
 
         let mut res = vec![0; res_len as usize];
         if let Err(err) = memory.read(&mut *store, res_ptr as usize, &mut res) {

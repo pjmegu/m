@@ -10,7 +10,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, fenix, ... }:
+  outputs = { nixpkgs, flake-utils, fenix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         overlays = [ fenix.overlays.default ];
@@ -19,9 +19,12 @@
       in {
         devShells.default = pkgs.mkShell {
           packages = [
-            rust.default.toolchain
-            rust.targets.wasm32-unknown-unknown.latest.rust-std
+            (rust.combine [
+              rust.default.toolchain
+              rust.targets.wasm32-unknown-unknown.latest.toolchain
+            ])
             pkgs.cargo-nextest
+            pkgs.wasm-tools
           ];
         };
       });
