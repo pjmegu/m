@@ -4,21 +4,35 @@ on:
     branches: [main]
   pull_request:
 jobs:
-  rust:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: CheckOut
         uses: actions/checkout@v4
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          targets: wasm32-unknown-unknown
-          components: rustfmt, clippy, cargo
+      - name: Setup Nix
+        uses: DeterminateSystems/nix-installer-action@main
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
       - name: Run Tests
         run: |
-          cargo test --workspace
+          nix develop -c cargo xtask test -f
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CheckOut
+        uses: actions/checkout@v4
+      - name: Setup Nix
+        uses: DeterminateSystems/nix-installer-action@main
       - name: Run Format Check
         run: |
-          cargo fmt --all --check
+          nix develop -c cargo fmt --all --check
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CheckOut
+        uses: actions/checkout@v4
+      - name: Setup Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - name: Run Lint
+        run: |
+          nix develop -c cargo clippy --workspace
